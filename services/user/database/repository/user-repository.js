@@ -23,13 +23,21 @@ class UserRepositoty {
   // find user
   async FindUser(username) {
     const user = await userModel.findOne({ username: username });
-
     return user;
   }
 
   // update user token
   async UpdateUserToken(id, token) {
     const user = await userModel.findByIdAndUpdate(id, { token: token });
+  }
+
+  async UserTokenMatch(id, token) {
+    const user = await userModel.findById(id);
+    if (user.token === token) {
+      return user;
+    } else {
+      return false;
+    }
   }
 }
 

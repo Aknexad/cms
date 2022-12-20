@@ -51,6 +51,25 @@ class UserLogic {
     };
     return result;
   }
+
+  // new Access token
+
+  async NewAccessToken(id, toekn) {
+    // check toekn in db
+    const user = await this.repository.UserTokenMatch(id, toekn);
+
+    if (user === false) return false;
+
+    const payload = {
+      id: user.id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+    };
+    // genatate new access toekn
+    const newToekn = generateAccsessToken(payload);
+
+    return { AccessToekn: newToekn };
+  }
 }
 
 module.exports = UserLogic;
