@@ -11,7 +11,7 @@ class UserRepositoty {
 
     const user = await userModel.create({
       username: username,
-      passowrd: passowrd,
+      password: passowrd,
       isAdmin: false,
       token: 'qwer1234',
     });
@@ -24,9 +24,12 @@ class UserRepositoty {
   async FindUser(username) {
     const user = await userModel.findOne({ username: username });
 
-    if (!user) return false;
-
     return user;
+  }
+
+  // update user token
+  async UpdateUserToken(id, token) {
+    const user = await userModel.findByIdAndUpdate(id, { token: token });
   }
 }
 

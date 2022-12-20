@@ -10,14 +10,21 @@ module.exports = async app => {
 
   app.post('/register', async (req, res, next) => {
     const { username, password } = req.body;
+
     const result = await logic.UserRegister(username, password);
     res.send(result);
   });
 
   app.post('/login', async (req, res, next) => {
-    //  get user input
-    // send to logic
-    // show result
+    const { username, password } = req.body;
+
+    const result = await logic.UserLogin(username, password);
+
+    if (result === '!user' || result === '!pass') {
+      return res.send('usernaem or passowrd not match');
+    }
+
+    res.json(result);
   });
 
   app.get('/newToken', async (req, res, next) => {

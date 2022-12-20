@@ -1,5 +1,10 @@
 const UserRepository = require('../database/repository/user-repository');
 
+const {
+  generateAccsessToken,
+  genrateRefreshToken,
+} = require('../middlewares/generate-token');
+
 class UserLogic {
   constructor() {
     this.repository = new UserRepository();
@@ -11,20 +16,40 @@ class UserLogic {
     return result;
   }
 
-  async UserLogin(input) {
-    const { usernaem, password } = input;
+  async UserLogin(usernaeme, password) {
+    const getUser = await this.repository.FindUser(usernaeme);
 
-    const chackUser = await this.repository.FindUser(usernaem);
+    if (!getUser) return '!user';
+    if (password !== getUser.password) return '!pass';
 
-    if (!chackUser) return false;
+    // generate token
 
-    if (password !== chackUser.password) return 'pass not match';
+    const payload = {
+      id: getUser.id,
+      username: getUser.username,
+      isAdmin: getUser.isAdmin,
+    };
 
-    // crate new tokens
+    const accessToken = generateAccsessToken(payload);
+    const refrashToken = genrateRefreshToken(payload);
 
     // save token in db
 
+    const seaveToekn = await this.repository.UpdateUserToken(
+      getUser.id,
+      refrashToken
+    );
+
     // return data
+
+    const result = {
+      id: getUser.id,
+      usernaeme: getUser.username,
+      isAdmin: getUser.isAdmin,
+      accessToken: accessToken,
+      refrashToken: refrashToken,
+    };
+    return result;
   }
 }
 
