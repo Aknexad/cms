@@ -19,6 +19,15 @@ class UserRepositoty {
     const result = await user.save();
     return result;
   }
+
+  // find user
+  async FindUser(username) {
+    const user = await userModel.findOne({ username: username });
+
+    if (!user) return false;
+
+    return user;
+  }
 }
 
 module.exports = UserRepositoty;
