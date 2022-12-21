@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 
 const UserRepository = require('../database/repository/user-repository');
+const TokensRepositoty = require('../database/repository/tokens-repository');
 
 const {
   generateAccsessToken,
@@ -13,6 +14,7 @@ const extractVerifyJwt = require('../middlewares/extractorJwt');
 class UserLogic {
   constructor() {
     this.repository = new UserRepository();
+    this.tokensRepositoty = new TokensRepositoty();
   }
 
   async UserRegister(usernaem, passowrd) {
@@ -38,7 +40,6 @@ class UserLogic {
     // if (password !== getUser.password) return '!pass';
 
     // generate token
-
     const payload = {
       id: getUser.id,
       username: getUser.username,
@@ -50,10 +51,16 @@ class UserLogic {
 
     // save token in db
 
-    const seaveToekn = await this.repository.UpdateUserToken(
+    await this.tokensRepositoty.CreateToken(
       getUser.id,
+      accessToken,
       refrashToken
     );
+
+    // const seaveToekn = await this.repository.UpdateUserToken(
+    //   getUser.id,
+    //   refrashToken
+    // );
 
     // return data
 

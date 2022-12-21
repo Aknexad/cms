@@ -31,18 +31,17 @@ module.exports = async app => {
 
       const result = await logic.UserLogin(username, password);
 
-      if (result === '!user' || result === '!pass') {
-        return res.send('usernaem or passowrd not match');
-      }
+      // if (result === '!user' || result === '!pass') {
+      //   return res.send('usernaem or passowrd not match');
+      // }
 
       res.json(result);
     }
   );
 
-  app.get('/newtoken', async (req, res, next) => {
+  app.post('/newtoken', async (req, res) => {
     // get refreach token
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTE3YTlhOWNmZWMzN2ExMjY0NmE1ZCIsInVzZXJuYW1lIjoidXNlciIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2NzE1MjgyNzh9.G2vOsMXhNfBK4jeZB-9LqwIED6x9o5dPt0WlnPYC_n0';
+    const token = req.body.token;
     const id = '63a17a9a9cfec37a12646a5d';
     // cheack refrash token
     const result = await logic.NewAccessToken(id, token);

@@ -13,7 +13,6 @@ class UserRepositoty {
       username: username,
       password: passowrd,
       isAdmin: false,
-      token: '',
     });
 
     const result = await user.save();
