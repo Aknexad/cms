@@ -57,10 +57,11 @@ module.exports = async app => {
     '/logout',
     passport.authenticate('jwt', { session: false }),
     async (req, res) => {
-      // get user info
-      // chack user info
-      // delete token form db
-      // rediract user
+      const result = await logic.UserLogout(req);
+
+      if (result === false) return res.send('try agen');
+
+      res.send(result);
     }
   );
 };

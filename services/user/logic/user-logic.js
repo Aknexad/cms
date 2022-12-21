@@ -8,6 +8,8 @@ const {
   genrateRefreshToken,
 } = require('../middlewares/generate-token');
 
+const extractVerifyJwt = require('../middlewares/extractorJwt');
+
 class UserLogic {
   constructor() {
     this.repository = new UserRepository();
@@ -82,6 +84,20 @@ class UserLogic {
     const newToekn = generateAccsessToken(payload);
 
     return { AccessToekn: newToekn };
+  }
+
+  async UserLogout(req) {
+    const payload = extractVerifyJwt(req);
+
+    if (payload === 401) return 401;
+
+    const id = payload.id;
+
+    const deleteToeknFromDb = await this.repository.UpdateUserToken(id, '');
+
+    if (deleteToeknFromDb === false) return false;
+
+    return 200;
   }
 }
 

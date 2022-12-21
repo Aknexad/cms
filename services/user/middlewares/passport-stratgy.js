@@ -5,7 +5,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const bcrypt = require('bcrypt');
 const UserRepository = require('../database/repository/user-repository');
 
-require('dotenv').config({ path: '././config/.env' });
+require('dotenv').config({ path: './config/.env' });
 
 const repository = new UserRepository();
 
