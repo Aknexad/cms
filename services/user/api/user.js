@@ -1,31 +1,43 @@
 const UserLogic = require('../logic/user-logic');
+const passport = require('passport');
 
 module.exports = async app => {
   const logic = new UserLogic();
 
-  app.get('/', async (req, res, next) => {
-    console.log('form api user');
-    res.json({ status: 200, message: 'root' });
-  });
+  app.get(
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
+      console.log('form api user');
+      res.json({ status: 200, message: 'root' });
+    }
+  );
 
   app.post('/register', async (req, res, next) => {
     const { username, password } = req.body;
 
     const result = await logic.UserRegister(username, password);
+
+    if (result === 400) return res.send('username Exist');
+
     res.send(result);
   });
 
-  app.post('/login', async (req, res, next) => {
-    const { username, password } = req.body;
+  app.post(
+    '/login',
+    passport.authenticate('local', { session: false }),
+    async (req, res, next) => {
+      const { username, password } = req.body;
 
-    const result = await logic.UserLogin(username, password);
+      const result = await logic.UserLogin(username, password);
 
-    if (result === '!user' || result === '!pass') {
-      return res.send('usernaem or passowrd not match');
+      if (result === '!user' || result === '!pass') {
+        return res.send('usernaem or passowrd not match');
+      }
+
+      res.json(result);
     }
-
-    res.json(result);
-  });
+  );
 
   app.get('/newtoken', async (req, res, next) => {
     // get refreach token
@@ -41,10 +53,14 @@ module.exports = async app => {
     res.send(result);
   });
 
-  app.delete('/logout', async (req, res) => {
-    // get user info
-    // chack user info
-    // delete token form db
-    // rediract user
-  });
+  app.delete(
+    '/logout',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+      // get user info
+      // chack user info
+      // delete token form db
+      // rediract user
+    }
+  );
 };

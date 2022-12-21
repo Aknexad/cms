@@ -1,3 +1,6 @@
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+
 const UserRepository = require('../database/repository/user-repository');
 
 const {
@@ -11,16 +14,26 @@ class UserLogic {
   }
 
   async UserRegister(usernaem, passowrd) {
-    const result = await this.repository.CreateUser(usernaem, passowrd);
+    const checkUserExisting = await this.repository.FindUser(usernaem);
 
-    return result;
+    if (checkUserExisting) return 400;
+
+    const hashedPass = await bcrypt.hash(passowrd, 7);
+
+    const result = await this.repository.CreateUser(usernaem, hashedPass);
+
+    return {
+      id: result.id,
+      usernaeme: result.username,
+      isAdmin: result.isAdmin,
+    };
   }
 
   async UserLogin(usernaeme, password) {
     const getUser = await this.repository.FindUser(usernaeme);
 
-    if (!getUser) return '!user';
-    if (password !== getUser.password) return '!pass';
+    // if (!getUser) return '!user';
+    // if (password !== getUser.password) return '!pass';
 
     // generate token
 
@@ -52,7 +65,7 @@ class UserLogic {
     return result;
   }
 
-  // new Access token
+  // new Access tokeni
 
   async NewAccessToken(id, toekn) {
     // check toekn in db

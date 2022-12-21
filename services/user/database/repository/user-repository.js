@@ -13,7 +13,7 @@ class UserRepositoty {
       username: username,
       password: passowrd,
       isAdmin: false,
-      token: 'qwer1234',
+      token: '',
     });
 
     const result = await user.save();
@@ -23,6 +23,11 @@ class UserRepositoty {
   // find user
   async FindUser(username) {
     const user = await userModel.findOne({ username: username });
+    return user;
+  }
+
+  async FindUserById(id) {
+    const user = await userModel.findById(id);
     return user;
   }
 
