@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config({ path: './config/.env' });
 
 const expresApp = require('./express-app');
 const connectToDB = require('./database/connectingToDB');
@@ -11,7 +12,9 @@ const startServer = async () => {
   // expresApp
   expresApp(app);
 
-  app.listen(8080, () => console.log(`service run on ${8080}`));
+  app.listen(process.env.PORT, () =>
+    console.log(`service run on ${process.env.PORT}`)
+  );
 };
 
 startServer();
