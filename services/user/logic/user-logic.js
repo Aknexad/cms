@@ -7,7 +7,13 @@ const TokensRepositoty = require('../database/repository/tokens-repository');
 const {
   generateAccsessToken,
   genrateRefreshToken,
+  decodeToken,
 } = require('../middlewares/generate-token');
+
+const {
+  verifyAccessToekn,
+  verifyRefreshToekn,
+} = require('../middlewares/verify-token');
 
 const extractVerifyJwt = require('../middlewares/extractorJwt');
 
@@ -36,9 +42,6 @@ class UserLogic {
   async UserLogin(usernaeme, password) {
     const getUser = await this.repository.FindUser(usernaeme);
 
-    // if (!getUser) return '!user';
-    // if (password !== getUser.password) return '!pass';
-
     // generate token
     const payload = {
       id: getUser.id,
@@ -57,11 +60,6 @@ class UserLogic {
       refrashToken
     );
 
-    // const seaveToekn = await this.repository.UpdateUserToken(
-    //   getUser.id,
-    //   refrashToken
-    // );
-
     // return data
 
     const result = {
@@ -76,33 +74,74 @@ class UserLogic {
 
   // new Access tokeni
 
-  async NewAccessToken(id, toekn) {
-    // check toekn in db
-    const user = await this.repository.UserTokenMatch(id, toekn);
+  async NewAccessToken(token) {
+    const getUserToken = await this.tokensRepositoty.GetRefreshTokens(token);
+    if (!getUserToken) return 400;
 
-    if (user === false) return false;
+    const getUserInfo = decodeToken(token);
 
     const payload = {
-      id: user.id,
-      username: user.username,
-      isAdmin: user.isAdmin,
+      id: getUserInfo.id,
+      usernaeme: getUserInfo.username,
+      isAdmin: getUserInfo.isAdmin,
     };
-    // genatate new access toekn
-    const newToekn = generateAccsessToken(payload);
 
-    return { AccessToekn: newToekn };
+    const newAccessToken = generateAccsessToken(payload);
+
+    const updateAccessToekn = await this.tokensRepositoty.UpdateNewAccessToekn(
+      token,
+      newAccessToken
+    );
+
+    if (updateAccessToekn === 400) return 400;
+
+    return updateAccessToekn;
   }
 
-  async UserLogout(req) {
-    const payload = extractVerifyJwt(req);
+  //
+  //
 
-    if (payload === 401) return 401;
+  async VerifyAccessToekn(token) {
+    // const checkTokenJwt = verifyAccessToekn(token);
 
-    const id = payload.id;
+    // if (checkTokenJwt === 403) return 403;
 
-    const deleteToeknFromDb = await this.repository.UpdateUserToken(id, '');
+    const checkTokenDb = await this.tokensRepositoty.GetAccessToken(token);
 
-    if (deleteToeknFromDb === false) return false;
+    if (!checkTokenDb) return 404;
+
+    if (checkTokenDb.accessToken !== token) return 403;
+
+    return checkTokenDb.id;
+  }
+
+  //
+  //
+
+  async CeckAccessToekn(req, res, next) {
+    const token = req.body.token;
+
+    const checkTokenJwt = verifyAccessToekn(token);
+
+    if (checkTokenJwt === 403) return res.send(403);
+
+    // const checkTokenDb = await this.tokensRepositoty.GetAccessToken(token);
+
+    // if (!checkTokenDb) return res.send(404);
+
+    // if (checkTokenDb.accessToken !== token) return res.send(403);
+    req.body.token = token;
+
+    next();
+  }
+
+  //
+  //
+
+  async UserLogout(id) {
+    const deleteDocument = await this.tokensRepositoty.DeleteDocuments(id);
+
+    if (deleteDocument === 400) return 400;
 
     return 200;
   }

@@ -4,14 +4,10 @@ const passport = require('passport');
 module.exports = async app => {
   const logic = new UserLogic();
 
-  app.get(
-    '/',
-    passport.authenticate('jwt', { session: false }),
-    async (req, res, next) => {
-      console.log('form api user');
-      res.json({ status: 200, message: 'root' });
-    }
-  );
+  app.get('/', async (req, res, next) => {
+    console.log('form api user');
+    res.json({ status: 200, message: 'root' });
+  });
 
   app.post('/register', async (req, res, next) => {
     const { username, password } = req.body;
@@ -42,25 +38,27 @@ module.exports = async app => {
   app.post('/newtoken', async (req, res) => {
     // get refreach token
     const token = req.body.token;
-    const id = '63a17a9a9cfec37a12646a5d';
     // cheack refrash token
-    const result = await logic.NewAccessToken(id, token);
+    const result = await logic.NewAccessToken(token);
 
-    console.log(result);
-    if (result === false) return res.sendStatus(403);
+    if (result === 400) return res.sendStatus(403);
 
     res.send(result);
   });
 
-  app.delete(
-    '/logout',
-    passport.authenticate('jwt', { session: false }),
-    async (req, res) => {
-      const result = await logic.UserLogout(req);
+  app.delete('/logout', logic.CeckAccessToekn, async (req, res) => {
+    const token = req.body.token;
+    const cheackToeknInDb = await logic.VerifyAccessToekn(token);
 
-      if (result === false) return res.send('try agen');
+    if (cheackToeknInDb === 404) return res.send(403);
+    if (cheackToeknInDb === 403) return res.send(403);
 
-      res.send(result);
-    }
-  );
+    const documentId = cheackToeknInDb;
+
+    const deletTokens = await logic.UserLogout(documentId);
+
+    if (deletTokens === 400) return res.sendStatus(400);
+
+    res.sendStatus(200);
+  });
 };

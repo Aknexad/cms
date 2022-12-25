@@ -13,8 +13,8 @@ function genrateRefreshToken(payload) {
   return refreshToken;
 }
 
-function checkToken(token) {
-  return undefined;
+function decodeToken(token) {
+  return jwt.decode(token);
 }
 
-module.exports = { generateAccsessToken, genrateRefreshToken };
+module.exports = { generateAccsessToken, genrateRefreshToken, decodeToken };
