@@ -1,6 +1,8 @@
 const UserLogic = require('../logic/user-logic');
 const passport = require('passport');
 
+const registerValidation = require('../middlewares/input-validation');
+
 module.exports = async app => {
   const logic = new UserLogic();
 
@@ -14,7 +16,7 @@ module.exports = async app => {
     }
   });
 
-  app.post('/register', async (req, res, next) => {
+  app.post('/register', registerValidation, async (req, res, next) => {
     try {
       const { username, password } = req.body;
 
