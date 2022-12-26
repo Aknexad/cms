@@ -23,14 +23,14 @@ class UserLogic {
     this.tokensRepositoty = new TokensRepositoty();
   }
 
-  async UserRegister(usernaem, passowrd) {
-    const checkUserExisting = await this.repository.FindUser(usernaem);
+  async UserRegister(usernaeme, passowrd) {
+    const checkUserExisting = await this.repository.FindUser(usernaeme);
 
     if (checkUserExisting) throw new Error('username exist ');
 
     const hashedPass = await bcrypt.hash(passowrd, 7);
 
-    const result = await this.repository.CreateUser(usernaem, hashedPass);
+    const result = await this.repository.CreateUser(usernaeme, hashedPass);
 
     return {
       id: result.id,

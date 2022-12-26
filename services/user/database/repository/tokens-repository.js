@@ -8,6 +8,9 @@ class TokensRepositoty {
       accessToken: access,
       refreshToken: refrash,
     });
+
+    if (!addToken) throw new Error('try agen');
+    return addToken;
   }
 
   async getAllTokens(id) {
