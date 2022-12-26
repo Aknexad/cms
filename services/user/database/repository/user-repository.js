@@ -15,6 +15,8 @@ class UserRepositoty {
       isAdmin: false,
     });
 
+    if (!user) throw new Error('Internal Server Error');
+
     const result = await user.save();
     return result;
   }
@@ -22,11 +24,13 @@ class UserRepositoty {
   // find user
   async FindUser(username) {
     const user = await userModel.findOne({ username: username });
+    if (!user) throw new Error('user dont exsit');
     return user;
   }
 
   async FindUserById(id) {
     const user = await userModel.findById(id);
+    if (!user) throw new Error('user dont exsit');
     return user;
   }
 

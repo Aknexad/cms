@@ -6,6 +6,7 @@ module.exports = async app => {
 
   app.get('/', async (req, res, next) => {
     try {
+      throw new Error('errorr handling test');
       console.log('form api user');
       res.json({ status: 200, message: 'root' });
     } catch (error) {
@@ -19,8 +20,6 @@ module.exports = async app => {
 
       const result = await logic.UserRegister(username, password);
 
-      if (result === 400) return res.send('username Exist');
-
       res.send(result);
     } catch (error) {
       next(error);
@@ -32,9 +31,9 @@ module.exports = async app => {
     passport.authenticate('local', { session: false }),
     async (req, res, next) => {
       try {
-        const { username, password } = req.body;
+        const { username } = req.body;
 
-        const result = await logic.UserLogin(username, password);
+        const result = await logic.UserLogin(username);
 
         res.json(result);
       } catch (error) {
@@ -50,7 +49,7 @@ module.exports = async app => {
       // cheack refrash token
       const result = await logic.NewAccessToken(token);
 
-      if (result === 400) return res.sendStatus(403);
+      // if (result === 400) return res.sendStatus(403);
 
       res.send(result);
     } catch (error) {
@@ -63,16 +62,10 @@ module.exports = async app => {
       const token = req.body.token;
       const cheackToeknInDb = await logic.VerifyAccessToekn(token);
 
-      if (cheackToeknInDb === 404) return res.send(403);
-      if (cheackToeknInDb === 403) return res.send(403);
-
       const documentId = cheackToeknInDb;
 
       const deletTokens = await logic.UserLogout(documentId);
-
-      if (deletTokens === 400) return res.sendStatus(400);
-
-      res.sendStatus(200);
+      res.sendStatus(deletTokens);
     } catch (error) {
       next(error);
     }

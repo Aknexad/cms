@@ -16,8 +16,9 @@ class TokensRepositoty {
   }
 
   async GetAccessTokensByUserId(id) {
-    console.log(id);
     const allToekns = await tokensModel.findOne({ a });
+
+    if (!allToekns) throw new Error('no toekn fond');
 
     const accessTokens = allToekns.map(t => t.accessToken);
 
@@ -33,11 +34,17 @@ class TokensRepositoty {
   }
 
   async GetRefreshTokens(token) {
-    return await tokensModel.findOne({ refreshToken: token });
+    const getToekn = await tokensModel.findOne({ refreshToken: token });
+
+    if (!getToekn) throw new Error('token dont exist');
+    return getToekn;
   }
 
   async GetAccessToken(token) {
-    return await tokensModel.findOne({ accessToken: token });
+    const getToekn = await tokensModel.findOne({ accessToken: token });
+
+    if (!getToekn) throw new Error('token dont exist');
+    return getToekn;
   }
 
   async UpdateNewAccessToekn(token, newToken) {
@@ -46,19 +53,16 @@ class TokensRepositoty {
       { accessToken: newToken },
       { new: true }
     );
-    if (!refreshToken) return 400;
+    if (!refreshToken) throw new Error('somting not working try agrn');
     return refreshToken;
   }
 
   async DeleteDocuments(id) {
     const deleteToeken = await tokensModel.findByIdAndRemove(id);
 
-    if (!deleteToeken) return 400;
+    if (!deleteToeken) throw new Error('user not fiund');
 
     return 200;
-
-    // const deleteToekns = await tokensModel.remove();
-    // return deleteToekns;
   }
 }
 module.exports = TokensRepositoty;

@@ -1,7 +1,5 @@
 const express = require('express');
 
-const error = require('./middlewares/error');
-
 require('dotenv').config({ path: './config/.env' });
 
 const expresApp = require('./express-app');
@@ -16,8 +14,8 @@ const startServer = async () => {
   expresApp(app);
 
   // catch errors
-  app.use((err, req, res, next) => {
-    res.status(500).send('ssomting not working');
+  app.use((error, req, res, next) => {
+    return res.status(500).send(error.message);
   });
 
   app.listen(process.env.PORT, () =>

@@ -26,7 +26,7 @@ class UserLogic {
   async UserRegister(usernaem, passowrd) {
     const checkUserExisting = await this.repository.FindUser(usernaem);
 
-    if (checkUserExisting) return 400;
+    if (checkUserExisting) throw new Error('username exist ');
 
     const hashedPass = await bcrypt.hash(passowrd, 7);
 
@@ -39,8 +39,10 @@ class UserLogic {
     };
   }
 
-  async UserLogin(usernaeme, password) {
+  async UserLogin(usernaeme) {
     const getUser = await this.repository.FindUser(usernaeme);
+
+    if (!getUser) throw new Error('username not find');
 
     // generate token
     const payload = {
@@ -76,7 +78,7 @@ class UserLogic {
 
   async NewAccessToken(token) {
     const getUserToken = await this.tokensRepositoty.GetRefreshTokens(token);
-    if (!getUserToken) return 400;
+    if (!getUserToken) throw new Error('unvaled toekn');
 
     const getUserInfo = decodeToken(token);
 
@@ -93,8 +95,6 @@ class UserLogic {
       newAccessToken
     );
 
-    if (updateAccessToekn === 400) return 400;
-
     return updateAccessToekn;
   }
 
@@ -108,9 +108,10 @@ class UserLogic {
 
     const checkTokenDb = await this.tokensRepositoty.GetAccessToken(token);
 
-    if (!checkTokenDb) return 404;
+    if (!checkTokenDb) throw new Error('token not find');
 
-    if (checkTokenDb.accessToken !== token) return 403;
+    if (checkTokenDb.accessToken !== token)
+      throw new Error('unauthorized token');
 
     return checkTokenDb.id;
   }
@@ -141,9 +142,7 @@ class UserLogic {
   async UserLogout(id) {
     const deleteDocument = await this.tokensRepositoty.DeleteDocuments(id);
 
-    if (deleteDocument === 400) return 400;
-
-    return 200;
+    return deleteDocument;
   }
 }
 
