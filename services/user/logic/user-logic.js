@@ -26,7 +26,7 @@ class UserLogic {
   async UserRegister(usernaeme, passowrd) {
     const checkUserExisting = await this.repository.FindUser(usernaeme);
 
-    if (checkUserExisting) throw new Error('username exist ');
+    if (checkUserExisting !== null) throw new Error('username exist ');
 
     const hashedPass = await bcrypt.hash(passowrd, 7);
 

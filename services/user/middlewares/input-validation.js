@@ -6,6 +6,8 @@ function registerValidation(req, res, next) {
     password: req.body.password,
   };
 
+  console.log(userInput);
+
   const schema = Joi.object({
     username: Joi.string().min(3).required,
     password: Joi.string()
@@ -16,7 +18,9 @@ function registerValidation(req, res, next) {
 
   const result = schema.validate(userInput);
 
+  console.error(result.error);
   if (result.error !== null) throw new Error(result.error.message);
+
   next();
 }
 

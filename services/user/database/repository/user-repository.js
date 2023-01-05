@@ -12,7 +12,6 @@ class UserRepositoty {
     const user = await userModel.create({
       username: username,
       password: passowrd,
-      isAdmin: false,
     });
 
     if (!user) throw new Error('Internal Server Error');
@@ -24,7 +23,7 @@ class UserRepositoty {
   // find user
   async FindUser(username) {
     const user = await userModel.findOne({ username: username });
-    if (!user) throw new Error('user dont exsit');
+    // if (user === null) throw new Error('user dont exsit');
     return user;
   }
 

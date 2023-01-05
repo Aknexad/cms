@@ -7,7 +7,18 @@ const UserSchema = new mongoose.Schema({
   },
   password: { type: String, required: true },
 
-  isAdmin: Boolean,
+  isAdmin: { type: Boolean, default: false },
+
+  tfaMethod: {
+    google: { type: Boolean, default: false },
+    phone: { type: Boolean, default: false },
+    email: { type: Boolean, default: false },
+  },
+
+  secret: {
+    key: { type: String, default: '' },
+    qrcode: { type: String, default: '`' },
+  },
 
   token: [String],
 });

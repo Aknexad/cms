@@ -1,9 +1,11 @@
 const UserLogic = require('../logic/user-logic');
-const passport = require('passport');
 
 const registerValidation = require('../middlewares/input-validation');
 
-module.exports = async app => {
+//middlewares
+const loginType = require('../middlewares/loginType');
+
+module.exports = async (app, passport) => {
   const logic = new UserLogic();
 
   app.get('/', async (req, res, next) => {
@@ -24,13 +26,17 @@ module.exports = async app => {
 
       res.send(result);
     } catch (error) {
+      console.error(error);
       next(error);
     }
   });
 
+  // login
   app.post(
     '/login',
     passport.authenticate('local', { session: false }),
+    loginType,
+
     async (req, res, next) => {
       try {
         const { username } = req.body;
@@ -43,6 +49,16 @@ module.exports = async app => {
       }
     }
   );
+
+  app.post('/login-2fa', async (req, res, next) => {
+    try {
+      const result = await logic.UserLogin(req.body.username);
+
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
 
   app.post('/newtoken', async (req, res, next) => {
     try {
