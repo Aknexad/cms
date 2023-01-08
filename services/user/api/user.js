@@ -50,11 +50,47 @@ module.exports = async (app, passport) => {
     }
   );
 
-  app.post('/login-2fa', async (req, res, next) => {
-    try {
-      const result = await logic.UserLogin(req.body.username);
+  app.post(
+    '/login-2fa',
+    passport.authenticate('2fa-totp', { session: false }),
+    async (req, res, next) => {
+      try {
+        const result = await logic.UserLogin(req.user.username);
 
-      res.json(result);
+        res.json(result);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  app.post('/enable-2fa', async (req, res, next) => {
+    try {
+      const { userId, status, type } = req.body;
+
+      const result = await logic.EnableTowFactAuth(userId, status, type);
+
+      res.json({
+        status: 200,
+        message: 'your Tow fact Auth is Enable',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/disable-2fa', async (req, res, next) => {
+    try {
+      const { userId, status, type } = req.body;
+
+      const result = await logic.DisabelTowFactAuth(userId, status, type);
+
+      res.json({
+        status: 200,
+        message: 'your Tow fact Auth is disable',
+        data: result,
+      });
     } catch (error) {
       next(error);
     }

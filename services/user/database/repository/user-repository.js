@@ -33,6 +33,15 @@ class UserRepositoty {
     return user;
   }
 
+  // cheahc
+  async CheackTempToken(toekn) {
+    const token = await userModel.findOne({ tempToken: toekn });
+    if (!token) throw new Error('token dont exsit');
+    return token;
+  }
+
+  // update
+
   // update user token
   async UpdateUserToken(id, token) {
     const user = await userModel.findByIdAndUpdate(id, { token: token });
@@ -45,6 +54,49 @@ class UserRepositoty {
     } else {
       return false;
     }
+  }
+
+  async UpdateTempToken(id, token) {
+    const user = await userModel.findById(id);
+
+    if (!user) throw new Error('user dont exsit');
+
+    user.tempToken = token;
+
+    user.save();
+    return user.tempToken;
+  }
+
+  async UpdateUser2fa(id, status, type) {
+    const user = await userModel.findById(id);
+    if (!user) throw new Error('user dont exsit');
+
+    if (status === false) {
+      user.towFactAuth = false;
+      user.tfaMethod.email = false;
+      user.tfaMethod.google = false;
+      user.tfaMethod.phone = false;
+      user.save;
+      return user.towFactAuth;
+    }
+
+    user.towFactAuth = status;
+
+    user.tfaMethod.google = true;
+
+    user.save();
+
+    return user.towFactAuth;
+  }
+
+  async UpdateSecret(id, secret) {
+    const user = await userModel.findById(id);
+    if (!user) throw new Error('user dont exsit');
+
+    user.secret.key = secret.secret;
+    user.secret.qrcode = secret.qr;
+    user.save();
+    return secret;
   }
 }
 

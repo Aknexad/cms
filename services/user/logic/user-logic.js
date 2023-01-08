@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const passport = require('passport');
 
 const UserRepository = require('../database/repository/user-repository');
 const TokensRepositoty = require('../database/repository/tokens-repository');
@@ -16,6 +15,8 @@ const {
 } = require('../middlewares/verify-token');
 
 const extractVerifyJwt = require('../middlewares/extractorJwt');
+const generateSecrat = require('../middlewares/passport/genarate-secrat');
+const genarateSecrate = require('../middlewares/passport/genarate-secrat');
 
 class UserLogic {
   constructor() {
@@ -120,17 +121,12 @@ class UserLogic {
   //
 
   async CeckAccessToekn(req, res, next) {
-    const token = req.body.token;
+    const { accessToken } = req.body.token;
 
-    const checkTokenJwt = verifyAccessToekn(token);
+    const checkTokenJwt = verifyAccessToekn(accessToken);
 
     if (checkTokenJwt === 403) return res.send(403);
 
-    // const checkTokenDb = await this.tokensRepositoty.GetAccessToken(token);
-
-    // if (!checkTokenDb) return res.send(404);
-
-    // if (checkTokenDb.accessToken !== token) return res.send(403);
     req.body.token = token;
 
     next();
@@ -143,6 +139,42 @@ class UserLogic {
     const deleteDocument = await this.tokensRepositoty.DeleteDocuments(id);
 
     return deleteDocument;
+  }
+
+  //  Tow Fact Auth
+  async EnableTowFactAuth(id, status, type) {
+    const secret = genarateSecrate(id);
+
+    const updateStatus = await this.repository.UpdateUser2fa(id, status, type);
+
+    const updateSecret = await this.repository.UpdateSecret(id, secret);
+
+    if (!updateSecret) throw new Error('try agen');
+
+    return updateStatus;
+  }
+
+  async DisabelTowFactAuth(id, status, type) {
+    const updateStatus = await this.repository.UpdateUser2fa(id, status, type);
+
+    const updateSecret = await this.repository.UpdateSecret(id, {});
+
+    if (!updateSecret) throw new Error('try agen');
+
+    return updateStatus;
+  }
+
+  async GenarateTempToken(id) {
+    const tempToken = generateSecrat(id);
+
+    const saveToekn = await this.repository.UpdateTempToken(
+      id,
+      tempToken.secret
+    );
+
+    if (!saveToekn) throw new Error('somting dont work try agen');
+
+    return saveToekn;
   }
 }
 
