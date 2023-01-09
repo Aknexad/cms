@@ -28,6 +28,39 @@ class StrategyLogic {
     }
   }
 
+  async LocalAuthByEmail(email, password, done) {
+    try {
+      const user = await userRepo.FindByCusromFiled('email', email);
+
+      if (user === null) return done(null, false);
+
+      if (await bcrypt.compare(password, user.password)) {
+        return done(null, user);
+      }
+      return done(null, false);
+    } catch (error) {
+      console.error(error);
+      done(error);
+    }
+  }
+
+  //
+  async LocalAuthByPhone(Phone, password, done) {
+    try {
+      const user = await userRepo.FindByCusromFiled('phone', Phone);
+
+      if (user === null) return done(null, false);
+
+      if (await bcrypt.compare(password, user.password)) {
+        return done(null, user);
+      }
+      return done(null, false);
+    } catch (error) {
+      console.error(error);
+      done(error);
+    }
+  }
+
   // tow fact auth startaegy
 
   async First2faCallback(username, password, done) {
@@ -61,6 +94,15 @@ class StrategyLogic {
       const user = await userRepo.CheackTempToken(token);
       if (user === null) return done(null, false);
 
+      if (user.otp !== null) {
+        if (user.otp !== parseInt(code)) return done(null, false);
+
+        await userRepo.UpdateOtp(user.id, null);
+        await userRepo.UpdateTempToken(user.id, '');
+
+        return done(null, user);
+      }
+
       const Verifying = speakeasy.totp.verify({
         secret: user.secret.key,
         encoding: 'base32',
@@ -85,6 +127,14 @@ class StrategyLogic {
       const user = await userRepo.FindUserById(userId);
 
       if (user === null) return done(null, false);
+
+      if (user.otp !== null) {
+        if (user.otp !== parseInt(code)) return done(null, false);
+
+        await userRepo.UpdateOtp(user.id, null);
+
+        return done(null, user);
+      }
 
       const Verifying = speakeasy.totp.verify({
         secret: user.secret.key,

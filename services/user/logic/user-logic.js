@@ -142,20 +142,35 @@ class UserLogic {
   }
 
   //  Tow Fact Auth
-  async EnableTowFactAuth(id, status, type) {
-    const secret = genarateSecrate(id);
+  async EnableTowFactAuth(id, status, method) {
+    if (method === 'google') {
+      const updateStatus = await this.repository.UpdateUser2fa(
+        id,
+        status,
+        method
+      );
+      const secret = genarateSecrate(id);
+      const updateSecret = await this.repository.UpdateSecret(id, secret);
+      if (!updateSecret) throw new Error('try agen');
 
-    const updateStatus = await this.repository.UpdateUser2fa(id, status, type);
+      return updateStatus;
+    }
 
-    const updateSecret = await this.repository.UpdateSecret(id, secret);
-
-    if (!updateSecret) throw new Error('try agen');
+    const updateStatus = await this.repository.UpdateUser2fa(
+      id,
+      status,
+      method
+    );
 
     return updateStatus;
   }
 
-  async DisabelTowFactAuth(id, status, type) {
-    const updateStatus = await this.repository.UpdateUser2fa(id, status, type);
+  async DisabelTowFactAuth(id, status, method) {
+    const updateStatus = await this.repository.UpdateUser2fa(
+      id,
+      status,
+      method
+    );
 
     const updateSecret = await this.repository.UpdateSecret(id, {});
 
@@ -175,6 +190,18 @@ class UserLogic {
     if (!saveToekn) throw new Error('somting dont work try agen');
 
     return saveToekn;
+  }
+
+  async GenarateOtpAndSaved(id) {
+    try {
+      const code = Math.floor(100000 + Math.random() * 900000);
+
+      await this.repository.UpdateOtp(id, code);
+
+      return code;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
 

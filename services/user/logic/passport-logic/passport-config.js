@@ -10,6 +10,14 @@ const stratgyLogic = new StrategyLogic();
 function initialize(passport) {
   // local
   passport.use(new LocalStrategy(stratgyLogic.LocalAuthByUsernaem));
+  passport.use(
+    'local-email',
+    new LocalStrategy({ usernameField: 'email' }, stratgyLogic.LocalAuthByEmail)
+  );
+  passport.use(
+    'local-phone',
+    new LocalStrategy({ usernameField: 'phone' }, stratgyLogic.LocalAuthByEmail)
+  );
 
   // tow fact auth
   passport.use(
@@ -19,7 +27,6 @@ function initialize(passport) {
       stratgyLogic.Scend2faCallback
     )
   );
-
   passport.use(
     'verifyingTotp',
     new CustomStrategy(stratgyLogic.VerifyingTotpFor2faRoute)

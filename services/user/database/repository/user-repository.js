@@ -33,6 +33,12 @@ class UserRepositoty {
     return user;
   }
 
+  async FindByCusromFiled(filed, x) {
+    const user = await userModel.findOne({ filed: x });
+    if (!user) throw new Error('user dont exsit');
+    return user;
+  }
+
   // cheahc
   async CheackTempToken(toekn) {
     const token = await userModel.findOne({ tempToken: toekn });
@@ -67,9 +73,18 @@ class UserRepositoty {
     return user.tempToken;
   }
 
-  async UpdateUser2fa(id, status, type) {
+  async UpdateUser2fa(id, status, method) {
     const user = await userModel.findById(id);
     if (!user) throw new Error('user dont exsit');
+
+    // chack user 2fa is enabel or note
+    for (const type in user.tfaMethod) {
+      if (Object.hasOwnProperty.call(user.tfaMethod, type)) {
+        const element = user.tfaMethod[type];
+
+        if (element === true) throw new Error('your 2fa is enabel');
+      }
+    }
 
     if (status === false) {
       user.towFactAuth = false;
@@ -80,13 +95,23 @@ class UserRepositoty {
       return user.towFactAuth;
     }
 
-    user.towFactAuth = status;
+    if (method === 'google') {
+      user.towFactAuth = status;
+      user.tfaMethod.google = true;
+      user.save();
+    }
+    if (method === 'email') {
+      user.towFactAuth = status;
+      user.tfaMethod.email = true;
+      user.save();
+    }
+    if (method === 'phone') {
+      user.towFactAuth = status;
+      user.tfaMethod.phone = true;
+      user.save();
+    }
 
-    user.tfaMethod.google = true;
-
-    user.save();
-
-    return user.towFactAuth;
+    return { statusOf2fa: user.towFactAuth, method: method };
   }
 
   async UpdateSecret(id, secret) {
@@ -97,6 +122,19 @@ class UserRepositoty {
     user.secret.qrcode = secret.qr;
     user.save();
     return secret;
+  }
+
+  async UpdateOtp(id, num) {
+    try {
+      const user = await userModel.findById(id);
+
+      if (!user) throw new Error('user dont exsst');
+
+      user.otp = num;
+      user.save();
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
 

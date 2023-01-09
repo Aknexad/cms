@@ -18,7 +18,7 @@ module.exports = async (app, passport) => {
     }
   });
 
-  app.post('/register', registerValidation, async (req, res, next) => {
+  app.post('/register', async (req, res, next) => {
     try {
       const { username, password } = req.body;
 
@@ -34,7 +34,9 @@ module.exports = async (app, passport) => {
   // login
   app.post(
     '/login',
-    passport.authenticate('local', { session: false }),
+    passport.authenticate(['local', 'local-email', 'local-phone'], {
+      session: false,
+    }),
     loginType,
 
     async (req, res, next) => {
