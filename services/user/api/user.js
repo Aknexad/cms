@@ -52,7 +52,7 @@ module.exports = async (app, passport) => {
 
   app.post(
     '/login-2fa',
-    passport.authenticate('2fa-totp', { session: false }),
+    passport.authenticate('verifyingTotp', { session: false }),
     async (req, res, next) => {
       try {
         const result = await logic.UserLogin(req.user.username);
@@ -80,21 +80,25 @@ module.exports = async (app, passport) => {
     }
   });
 
-  app.post('/disable-2fa', async (req, res, next) => {
-    try {
-      const { userId, status, type } = req.body;
+  app.post(
+    '/disable-2fa',
+    passport.authenticate('disTotp', { session: false }),
+    async (req, res, next) => {
+      try {
+        const { userId, status, type } = req.body;
 
-      const result = await logic.DisabelTowFactAuth(userId, status, type);
+        const result = await logic.DisabelTowFactAuth(userId, status, type);
 
-      res.json({
-        status: 200,
-        message: 'your Tow fact Auth is disable',
-        data: result,
-      });
-    } catch (error) {
-      next(error);
+        res.json({
+          status: 200,
+          message: 'your Tow fact Auth is disable',
+          data: result,
+        });
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 
   app.post('/newtoken', async (req, res, next) => {
     try {

@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const user = require('../../api/user');
+const speakeasy = require('speakeasy');
 
 const GoogleAuthenticator = require('passport-2fa-totp').GoogeAuthenticator;
 
@@ -30,17 +30,9 @@ class StrategyLogic {
 
   // tow fact auth startaegy
 
-  async t1(req, done) {
-    const user = await userRepo.CheackTempToken(req.body.token);
-
-    if (user === null) return done(null, false);
-    done(null, user);
-  }
-
-  async First2faCallback(token, password, done) {
+  async First2faCallback(username, password, done) {
     try {
-      console.log(token, password);
-      const user = await userRepo.CheackTempToken(token);
+      const user = await userRepo.CheackTempToken(username);
 
       if (!user) return done(null, false);
       if (await bcrypt.compare(password, user.password)) {
@@ -59,6 +51,53 @@ class StrategyLogic {
     const secret = GoogleAuthenticator.decodeSecret(user.secret.key);
 
     done(null, secret, 30);
+  }
+
+  //
+  async VerifyingTotpFor2faRoute(req, done) {
+    try {
+      const { token, code } = req.body;
+
+      const user = await userRepo.CheackTempToken(token);
+      if (user === null) return done(null, false);
+
+      const Verifying = speakeasy.totp.verify({
+        secret: user.secret.key,
+        encoding: 'base32',
+        token: code,
+      });
+
+      if (Verifying === false) return done(null, false);
+
+      await userRepo.UpdateTempToken(user.id, '');
+
+      return done(null, user);
+    } catch (error) {
+      done(error);
+    }
+  }
+
+  //
+  async VerifyingTotpForDisabelRoute(req, done) {
+    try {
+      const { userId, code } = req.body;
+
+      const user = await userRepo.FindUserById(userId);
+
+      if (user === null) return done(null, false);
+
+      const Verifying = speakeasy.totp.verify({
+        secret: user.secret.key,
+        encoding: 'base32',
+        token: code,
+      });
+
+      if (Verifying === false) return done(null, false);
+
+      return done(null, user);
+    } catch (error) {
+      done(error);
+    }
   }
 }
 
