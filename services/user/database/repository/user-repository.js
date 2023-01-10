@@ -77,35 +77,35 @@ class UserRepositoty {
     const user = await userModel.findById(id);
     if (!user) throw new Error('user dont exsit');
 
-    // chack user 2fa is enabel or note
-    for (const type in user.tfaMethod) {
-      if (Object.hasOwnProperty.call(user.tfaMethod, type)) {
-        const element = user.tfaMethod[type];
-
-        if (element === true) throw new Error('your 2fa is enabel');
-      }
-    }
-
     if (status === false) {
       user.towFactAuth = false;
       user.tfaMethod.email = false;
       user.tfaMethod.google = false;
       user.tfaMethod.phone = false;
-      user.save;
+      user.save();
       return user.towFactAuth;
     }
 
     if (method === 'google') {
+      if (user.tfaMethod.google === true) {
+        throw new Error('your method is enabel');
+      }
       user.towFactAuth = status;
       user.tfaMethod.google = true;
       user.save();
     }
     if (method === 'email') {
+      if (user.tfaMethod.email === true) {
+        throw new Error('your method is enabel');
+      }
       user.towFactAuth = status;
       user.tfaMethod.email = true;
       user.save();
     }
     if (method === 'phone') {
+      if (user.tfaMethod.phone === true) {
+        throw new Error('your method is enabel');
+      }
       user.towFactAuth = status;
       user.tfaMethod.phone = true;
       user.save();

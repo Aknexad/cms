@@ -68,9 +68,9 @@ module.exports = async (app, passport) => {
 
   app.post('/enable-2fa', async (req, res, next) => {
     try {
-      const { userId, status, type } = req.body;
+      const { userId, status, method } = req.body;
 
-      const result = await logic.EnableTowFactAuth(userId, status, type);
+      const result = await logic.EnableTowFactAuth(userId, status, method);
 
       res.json({
         status: 200,
@@ -101,6 +101,17 @@ module.exports = async (app, passport) => {
       }
     }
   );
+
+  app.post('/send-otp', async (req, res, next) => {
+    try {
+      const { userId } = req.body;
+
+      const code = await logic.GenarateOtpAndSaved(userId);
+      res.json({ status: 200, message: '', data: code });
+    } catch (error) {
+      next(error);
+    }
+  });
 
   app.post('/newtoken', async (req, res, next) => {
     try {

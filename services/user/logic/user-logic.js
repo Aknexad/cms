@@ -166,6 +166,8 @@ class UserLogic {
   }
 
   async DisabelTowFactAuth(id, status, method) {
+    console.log(status);
+
     const updateStatus = await this.repository.UpdateUser2fa(
       id,
       status,
