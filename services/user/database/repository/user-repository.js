@@ -1,14 +1,7 @@
-const mongoose = require('mongoose');
 const userModel = require('../models/user');
 
 class UserRepositoty {
   async CreateUser(username, passowrd) {
-    // const user = new userModel({
-    //   username: username,
-    //   passowrd: passowrd,
-    //   token: 'qwert123',
-    // });
-
     const user = await userModel.create({
       username: username,
       password: passowrd,
@@ -54,20 +47,6 @@ class UserRepositoty {
   }
 
   // update
-
-  // update user token
-  async UpdateUserToken(id, token) {
-    const user = await userModel.findByIdAndUpdate(id, { token: token });
-  }
-
-  async UserTokenMatch(id, token) {
-    const user = await userModel.findById(id);
-    if (user.token === token) {
-      return user;
-    } else {
-      return false;
-    }
-  }
 
   async UpdateTempToken(id, token) {
     const user = await userModel.findById(id);
@@ -134,8 +113,8 @@ class UserRepositoty {
   async UpdateOtp(id, num) {
     try {
       const user = await userModel.findById(id);
-
       if (!user) throw new Error('user dont exsst');
+      // if (user.otp !== null) throw new Error('please wite ');
 
       user.otp = num;
       user.save();

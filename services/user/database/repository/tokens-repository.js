@@ -63,7 +63,7 @@ class TokensRepositoty {
   async DeleteDocuments(id) {
     const deleteToeken = await tokensModel.findByIdAndRemove(id);
 
-    if (!deleteToeken) throw new Error('user not fiund');
+    if (!deleteToeken) throw new Error('token not fiund');
 
     return 200;
   }

@@ -1,4 +1,5 @@
 const UserLogic = require('../logic/user-logic');
+const { setTimeout } = require('timers/promises');
 
 const registerValidation = require('../middlewares/input-validation');
 
@@ -7,16 +8,6 @@ const loginType = require('../middlewares/loginType');
 
 module.exports = async (app, passport) => {
   const logic = new UserLogic();
-
-  app.get('/', async (req, res, next) => {
-    try {
-      throw new Error('errorr handling test');
-      console.log('form api user');
-      res.json({ status: 200, message: 'root' });
-    } catch (error) {
-      next(error);
-    }
-  });
 
   app.post('/register', async (req, res, next) => {
     try {
@@ -116,8 +107,13 @@ module.exports = async (app, passport) => {
     try {
       const { userId } = req.body;
 
-      const code = await logic.GenarateOtpAndSaved(userId);
+      const code = await logic.GenarateOtpAndSaved();
+      await logic.SetOtp(userId, code);
+
       res.json({ status: 200, message: '', data: code });
+
+      await setTimeout(5000);
+      await logic.SetOtp(userId, null);
     } catch (error) {
       next(error);
     }
@@ -146,7 +142,7 @@ module.exports = async (app, passport) => {
       const documentId = cheackToeknInDb;
 
       const deletTokens = await logic.UserLogout(documentId);
-      res.sendStatus(deletTokens);
+      res.json({ status: deletTokens, message, data });
     } catch (error) {
       next(error);
     }

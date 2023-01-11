@@ -103,10 +103,6 @@ class UserLogic {
   //
 
   async VerifyAccessToekn(token) {
-    // const checkTokenJwt = verifyAccessToekn(token);
-
-    // if (checkTokenJwt === 403) return 403;
-
     const checkTokenDb = await this.tokensRepositoty.GetAccessToken(token);
 
     if (!checkTokenDb) throw new Error('token not find');
@@ -121,13 +117,11 @@ class UserLogic {
   //
 
   async CeckAccessToekn(req, res, next) {
-    const { accessToken } = req.body.token;
+    const accessToken = req.body.token;
 
     const checkTokenJwt = verifyAccessToekn(accessToken);
 
     if (checkTokenJwt === 403) return res.send(403);
-
-    req.body.token = token;
 
     next();
   }
@@ -194,15 +188,25 @@ class UserLogic {
     return saveToekn;
   }
 
-  async GenarateOtpAndSaved(id) {
+  async GenarateOtpAndSaved() {
     try {
       const code = Math.floor(100000 + Math.random() * 900000);
 
-      await this.repository.UpdateOtp(id, code);
-
       return code;
     } catch (error) {
-      throw new Error(error);
+      return error;
+    }
+  }
+
+  async SetOtp(id, otp) {
+    try {
+      console.log('claa set otp');
+      const user = await this.repository.FindUserById(id);
+
+      const setOtp = await this.repository.UpdateOtp(id, otp);
+      return setOtp;
+    } catch (error) {
+      return error;
     }
   }
 }
