@@ -33,10 +33,17 @@ class UserRepositoty {
     return user;
   }
 
-  async FindByCusromFiled(filed, x) {
-    const user = await userModel.findOne({ filed: x });
-    if (!user) throw new Error('user dont exsit');
-    return user;
+  async FindByCusromFiled(input) {
+    const byUsername = await userModel.findOne({ username: input });
+    if (byUsername) return byUsername;
+
+    const byEmail = await userModel.findOne({ email: input });
+    if (byEmail) return byEmail;
+
+    const byPhone = await userModel.findOne({ phone: input });
+    if (byPhone) return byPhone;
+
+    throw new Error('user dont exist');
   }
 
   // cheahc

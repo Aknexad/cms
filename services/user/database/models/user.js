@@ -6,8 +6,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: { type: String },
-  phone: { type: Number },
+  email: { type: String, default: null },
+  phone: { type: Number, default: null },
 
   password: { type: String, required: true },
   otp: { type: Number, default: null },
@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
   isAdmin: { type: Boolean, default: false },
 
   towFactAuth: { type: Boolean, default: false },
+  otpAuth: { type: Boolean, default: false },
 
   tfaMethod: {
     google: { type: Boolean, default: false },

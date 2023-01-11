@@ -11,10 +11,9 @@ const userRepo = new UserRepository();
 
 class StrategyLogic {
   //   local startgy logic for username
-  async LocalAuthByUsernaem(username, password, done) {
+  async LocalAuthByUsernaem(userInput, password, done) {
     try {
-      const user = await userRepo.FindUser(username);
-      console.log(user);
+      const user = await userRepo.FindByCusromFiled(userInput);
 
       if (!user) return done(null, false);
 
@@ -23,40 +22,6 @@ class StrategyLogic {
       }
       return done(null, false);
     } catch (error) {
-      console.error(error);
-      done(error);
-    }
-  }
-
-  async LocalAuthByEmail(email, password, done) {
-    try {
-      const user = await userRepo.FindByCusromFiled('email', email);
-
-      if (user === null) return done(null, false);
-
-      if (await bcrypt.compare(password, user.password)) {
-        return done(null, user);
-      }
-      return done(null, false);
-    } catch (error) {
-      console.error(error);
-      done(error);
-    }
-  }
-
-  //
-  async LocalAuthByPhone(Phone, password, done) {
-    try {
-      const user = await userRepo.FindByCusromFiled('phone', Phone);
-
-      if (user === null) return done(null, false);
-
-      if (await bcrypt.compare(password, user.password)) {
-        return done(null, user);
-      }
-      return done(null, false);
-    } catch (error) {
-      console.error(error);
       done(error);
     }
   }

@@ -34,11 +34,8 @@ module.exports = async (app, passport) => {
   // login
   app.post(
     '/login',
-    passport.authenticate(['local', 'local-email', 'local-phone'], {
-      session: false,
-    }),
+    passport.authenticate('local', { session: false }),
     loginType,
-
     async (req, res, next) => {
       try {
         const { username } = req.body;

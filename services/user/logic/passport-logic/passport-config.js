@@ -9,14 +9,11 @@ const stratgyLogic = new StrategyLogic();
 
 function initialize(passport) {
   // local
-  passport.use(new LocalStrategy(stratgyLogic.LocalAuthByUsernaem));
   passport.use(
-    'local-email',
-    new LocalStrategy({ usernameField: 'email' }, stratgyLogic.LocalAuthByEmail)
-  );
-  passport.use(
-    'local-phone',
-    new LocalStrategy({ usernameField: 'phone' }, stratgyLogic.LocalAuthByEmail)
+    new LocalStrategy(
+      { usernameField: 'userInput' },
+      stratgyLogic.LocalAuthByUsernaem
+    )
   );
 
   // tow fact auth
