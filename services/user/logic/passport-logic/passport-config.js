@@ -18,13 +18,6 @@ function initialize(passport) {
 
   // tow fact auth
   passport.use(
-    new TowFactStrategy(
-      { usernameField: 'token' },
-      stratgyLogic.First2faCallback,
-      stratgyLogic.Scend2faCallback
-    )
-  );
-  passport.use(
     'verifyingTotp',
     new CustomStrategy(stratgyLogic.VerifyingTotpFor2faRoute)
   );
@@ -32,6 +25,9 @@ function initialize(passport) {
     'disTotp',
     new CustomStrategy(stratgyLogic.VerifyingTotpForDisabelRoute)
   );
+
+  // otp auth
+  passport.use('otpAuth', new CustomStrategy(stratgyLogic.VerifyingOtp));
 }
 
 module.exports = initialize;

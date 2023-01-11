@@ -28,29 +28,6 @@ class StrategyLogic {
 
   // tow fact auth startaegy
 
-  async First2faCallback(username, password, done) {
-    try {
-      const user = await userRepo.CheackTempToken(username);
-
-      if (!user) return done(null, false);
-      if (await bcrypt.compare(password, user.password)) {
-        return done(null, user);
-      }
-      return done(null, false);
-    } catch (error) {
-      done(error);
-    }
-  }
-
-  async Scend2faCallback(user, done) {
-    if (!user.secret) {
-      return done(new Error('Google Authenticator is not setup yet.'));
-    }
-    const secret = GoogleAuthenticator.decodeSecret(user.secret.key);
-
-    done(null, secret, 30);
-  }
-
   //
   async VerifyingTotpFor2faRoute(req, done) {
     try {
@@ -109,6 +86,25 @@ class StrategyLogic {
 
       if (Verifying === false) return done(null, false);
 
+      return done(null, user);
+    } catch (error) {
+      done(error);
+    }
+  }
+
+  // otp auth Strategy
+
+  async VerifyingOtp(req, done) {
+    try {
+      const { userInput, password } = req.body;
+
+      const user = await userRepo.FindByCusromFiled(userInput);
+
+      if (user === null) return done(null, false);
+      if (user.otpAuth === false) throw new Error('you dont enabel otp ');
+      if (user.otp === null) throw new Error('you dont have otp try agen');
+
+      if (user.otp !== parseInt(password)) return done(null, false);
       return done(null, user);
     } catch (error) {
       done(error);

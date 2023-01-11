@@ -63,6 +63,19 @@ module.exports = async (app, passport) => {
     }
   );
 
+  app.post(
+    '/login-otp',
+    passport.authenticate('otpAuth', { session: false }),
+    async (req, res, next) => {
+      try {
+        const result = await logic.UserLogin(req.user.username);
+        res.json(result);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
   app.post('/enable-2fa', async (req, res, next) => {
     try {
       const { userId, status, method } = req.body;
