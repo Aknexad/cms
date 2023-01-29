@@ -4,14 +4,19 @@ require('dotenv').config({ path: './config/.env' });
 
 const expresApp = require('./express-app');
 const connectToDB = require('./database/connectingToDB');
+const { CrateChannel } = require('./middlewares/message-broker');
 
 const startServer = async () => {
   const app = express();
 
   // datavase
-  connectToDB();
+  await connectToDB();
+
+  //
+  const channel = await CrateChannel();
+
   // expresApp
-  expresApp(app);
+  expresApp(app, channel);
 
   // catch errors
   app.use((error, req, res, next) => {

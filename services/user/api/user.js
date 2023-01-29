@@ -1,12 +1,18 @@
 const UserLogic = require('../logic/user-logic');
 const { setTimeout } = require('timers/promises');
 
+require('dotenv').config({ path: './config/.env' });
+
 const registerValidation = require('../middlewares/input-validation');
 
 //middlewares
 const loginType = require('../middlewares/loginType');
+const {
+  PublishMessage,
+  SubscribMessage,
+} = require('../middlewares/message-broker');
 
-module.exports = async (app, passport) => {
+module.exports = async (app, passport, channel) => {
   const logic = new UserLogic();
 
   app.post('/register', async (req, res, next) => {
@@ -29,9 +35,12 @@ module.exports = async (app, passport) => {
     loginType,
     async (req, res, next) => {
       try {
-        const { username } = req.body;
+        const { userInput } = req.body;
 
-        const result = await logic.UserLogin(username);
+        const data = `${userInput} login`;
+
+        PublishMessage(channel, process.env.TESTING_BINDING_KEY, data);
+        const result = await logic.UserLogin(userInput);
 
         res.json(result);
       } catch (error) {
