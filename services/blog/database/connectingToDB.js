@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const DB_URL = 'mongodb://localhost:27017/user-svc';
+const DB_URL = 'mongodb://0.0.0.0:27017/blog-svc';
 
 module.exports = async () => {
   try {
