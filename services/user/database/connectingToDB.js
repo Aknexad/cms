@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const DB_URL = 'mongodb://0.0.0.0:27017/user-svc';
+const DB_URL =
+  'mongodb://mongo1:27017,mongo2:27017,mongo3:27017/user-svc?replicaSet=myReplicaSet&tls=true';
 
 module.exports = async () => {
   try {

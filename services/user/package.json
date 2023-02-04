@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index",
     "dev": "nodemon index"
   },
   "keywords": [],
@@ -21,9 +22,7 @@
     "passport": "^0.6.0",
     "passport-2fa-totp": "^0.0.1",
     "passport-custom": "^1.1.1",
-    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "passport-totp": "^0.0.2",
     "speakeasy": "^2.0.0"
   },
   "devDependencies": {
