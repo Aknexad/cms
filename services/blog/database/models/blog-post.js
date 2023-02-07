@@ -5,7 +5,8 @@ const BlogPostSchema = new mongoose.Schema({
   description: { type: String },
   content: { type: String },
   authoer: { type: String },
-  catagory: { type: [Number] },
+  cover: { type: String },
+  catagory: [mongoose.ObjectId],
 });
 
 const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
