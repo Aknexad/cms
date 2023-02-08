@@ -28,7 +28,7 @@ module.exports = async app => {
     }
   });
 
-  app.post('/add', async (req, res, ext) => {
+  app.post('/add', async (req, res, next) => {
     try {
       const { payload } = req.body;
 
@@ -50,9 +50,9 @@ module.exports = async app => {
   // catagory section
 
   app.post('/catagory', async (req, res, next) => {
-    const name = req.body.name;
+    const { id } = req.body;
 
-    const result = await logic.GetCatagory(name);
+    const result = await logic.GetCatagory(id);
 
     if (result === 400) {
       return res.json({ status: 400, message: 'try agen', payload: {} });
@@ -73,3 +73,25 @@ module.exports = async app => {
     return res.json({ status: 200, message: '', payload: { result } });
   });
 };
+
+// let payload = {
+//   response: {
+//     {name: "akhbar",children:{
+//       root:{
+//         id,
+//         naem
+//       }
+
+//     }}
+//   }
+// }
+
+// let x = {
+//   tit:'a',
+//   d:'d',
+//   catagory:{
+//       a:{id:"dwd231",naem:"a",chil:[a-1:{},a-2:{}]}
+
+//   }
+
+// }

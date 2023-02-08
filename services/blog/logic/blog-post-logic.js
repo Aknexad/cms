@@ -1,5 +1,9 @@
+// repository
 const BlogPostRepo = require('../database/reposotory/blog-post-repository');
 const BlogCatagoryRepo = require('../database/reposotory/blog-catagory-repository');
+
+// middlewares
+const createTree = require('../middlewares/recursion-array-tree');
 
 class BlogLogic {
   constructor() {
@@ -18,16 +22,11 @@ class BlogLogic {
   async GetPostLogic(id) {
     const getPost = await this.postRepository.GetPost(id);
 
+    // const res = createTree()
+
     if (!getPost) return 404;
 
     let postObj = getPost;
-    // console.log(postObj);
-
-    // let x = postObj.catagory;
-
-    // const extractNameOfCat = x.map(x => x.name);
-
-    // postObj.catagory = extractNameOfCat;
 
     return postObj;
   }
@@ -41,11 +40,16 @@ class BlogLogic {
     return create;
   }
 
-  async GetCatagory(name) {
-    const cat = await this.catagoryRepo.GetCatagory(name);
+  async GetCatagory(id) {
+    const cat = await this.catagoryRepo.GetCatagory(id);
+
+    const strfy = JSON.stringify(cat);
+    const parser = JSON.parse(strfy);
+
+    const result = createTree(parser);
 
     if (!cat) return 400;
-    return cat;
+    return result;
   }
 }
 

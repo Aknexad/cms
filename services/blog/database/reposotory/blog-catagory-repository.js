@@ -50,6 +50,10 @@ class catagoryRepository {
   //
   async GetCatagory(id) {
     try {
+      if (id === null) {
+        return await catagoryModel.find();
+      }
+
       const cat = await catagoryModel.aggregate([
         {
           $match: {
