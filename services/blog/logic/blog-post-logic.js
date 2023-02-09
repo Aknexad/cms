@@ -4,6 +4,7 @@ const BlogCatagoryRepo = require('../database/reposotory/blog-catagory-repositor
 
 // middlewares
 const createTree = require('../middlewares/recursion-array-tree');
+const paginatingData = require('../middlewares/pagination-logic');
 
 class BlogLogic {
   constructor() {
@@ -19,16 +20,33 @@ class BlogLogic {
   }
 
   // return  post
-  async GetPostLogic(id) {
-    const getPost = await this.postRepository.GetPost(id);
+  async GetPostLogic(id, method) {
+    if (method === 'cat') {
+      const getPostByCatagory = [{}];
+      if (!getPostByCatagory) return 404;
+      return getPostByCatagory;
+    }
+    if (method === 'id') {
+      let getPost = await this.postRepository.GetPostById(id);
 
-    // const res = createTree()
+      const cat = getPost[0].catagory;
 
-    if (!getPost) return 404;
+      // replace catagory by tree data of catagory
+      const formatCat = JSON.parse(JSON.stringify(cat));
 
-    let postObj = getPost;
+      const formatedCatagory = createTree(formatCat);
 
-    return postObj;
+      getPost[0].catagory = formatedCatagory;
+
+      if (!getPost) return 404;
+      return getPost;
+    }
+
+    let getAllPost = await this.postRepository.GetAllPost();
+
+    const data = paginatingData(getAllPost, 4, 2);
+
+    return data;
   }
 
   // catagory

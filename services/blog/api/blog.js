@@ -15,9 +15,11 @@ module.exports = async app => {
   // post section
   app.post('/get-posts', async (req, res, next) => {
     try {
-      const { id } = req.body;
+      const { id, method, pagination } = req.body;
 
-      const post = await logic.GetPostLogic(id);
+      console.log(id, method);
+
+      const post = await logic.GetPostLogic(id, method);
       if (post === 404) {
         return res.json({ status: 404, message: 'no post fonde', payload: {} });
       }

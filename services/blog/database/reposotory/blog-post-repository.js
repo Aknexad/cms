@@ -23,7 +23,7 @@ class BlogRepository {
     }
   }
 
-  async GetPost(id) {
+  async GetPostById(id) {
     try {
       if (id === null) {
         const allPost = await postModel.aggregate([
@@ -81,6 +81,16 @@ class BlogRepository {
       return allPost;
     } catch (error) {
       throw new Error('internal server error');
+    }
+  }
+
+  async GetAllPost() {
+    try {
+      const posts = await postModel.find();
+
+      return posts;
+    } catch (error) {
+      throw new Error(error);
     }
   }
 }
