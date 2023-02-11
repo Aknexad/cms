@@ -8,29 +8,23 @@ const BogLogic = require('../logic/blog-post-logic');
 module.exports = async app => {
   const logic = new BogLogic();
 
-  app.get('/', async (req, res, next) => {
-    res.json({ status: 200, message: 'testing app', data: {} });
-  });
-
   // post section
-  app.post('/get-posts', async (req, res, next) => {
+
+  // Get Post
+  app.get('/posts', async (req, res, next) => {
     try {
-      const { id, method, pagination } = req.body;
+      const { id, page } = req.query;
 
-      console.log(id, method);
+      const posts = await logic.GetPostLogic(id, page);
 
-      const post = await logic.GetPostLogic(id, method);
-      if (post === 404) {
-        return res.json({ status: 404, message: 'no post fonde', payload: {} });
-      }
-
-      res.json({ status: 200, message: 'all psot', payload: { post } });
+      res.json({ status: 200, message: 'post added', payload: { posts } });
     } catch (error) {
       next(error);
     }
   });
 
-  app.post('/add', async (req, res, next) => {
+  // Crate Post
+  app.post('/posts', async (req, res, next) => {
     try {
       const { payload } = req.body;
 
@@ -45,55 +39,124 @@ module.exports = async app => {
     }
   });
 
-  // author section
+  // Update post
+  app.put('/posts', async (req, res, next) => {
+    try {
+      const { id, payload } = req.body;
 
-  app.get('/authoer', async (req, res, next) => {});
+      const result = await logic.UpdatePost(id, payload);
+
+      if (result === null) {
+        return res
+          .status(404)
+          .json({ status: 404, message: 'post dont exsite', payload: {} });
+      }
+
+      return res.json({
+        status: 200,
+        message: 'post updated',
+        payload: { result },
+      });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  });
+
+  // Delete post
+  app.delete('/posts', async (req, res, next) => {
+    try {
+      const { id } = req.body;
+
+      const result = await logic.DeletePost(id);
+
+      if (result === null) {
+        return res
+          .status(404)
+          .json({ status: 404, message: 'post dont exsite', payload: {} });
+      }
+
+      res.json({ status: 200, message: '', payload: { result } });
+    } catch (error) {
+      next(error);
+    }
+  });
 
   // catagory section
 
-  app.post('/catagory', async (req, res, next) => {
-    const { id } = req.body;
-
-    const result = await logic.GetCatagory(id);
-
-    if (result === 400) {
-      return res.json({ status: 400, message: 'try agen', payload: {} });
+  // Get Catagory
+  app.get('/catagorys', async (req, res, next) => {
+    try {
+      const result = await logic.GetCatagory();
+      res.status(200).json({ status: 200, message: '', payload: { result } });
+    } catch (error) {
+      next(error);
     }
-
-    return res.json({ status: 200, message: '', payload: { result } });
   });
+
+  // Crate Catagory
+  app.post('/catagorys', async (req, res, next) => {
+    try {
+      const { name, parent_id } = req.body;
+
+      const result = await logic.CreatCatagory({ name, parent_id });
+
+      if (result === 400) {
+        return res.json({ status: 400, message: 'try agen', payload: {} });
+      }
+
+      return res.json({ status: 200, message: '', payload: { result } });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Update Catagory
+  app.put('/catagorys', async (req, res, next) => {
+    try {
+      const { id, naem, parent_id } = req.body;
+
+      const result = await logic.UpdateCatagory(id, naem, parent_id);
+
+      if (result === null) {
+        return res
+          .status(404)
+          .json({ status: 404, message: 'catagory dont exsite', payload: {} });
+      }
+
+      res.json({
+        status: 200,
+        message: 'catagory updated',
+        payload: { result },
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Delete Catagory
+
+  app.delete('/catagorys', async (req, res, next) => {
+    try {
+      const { id } = req.body;
+
+      const result = await logic.DeleteCatagory(id);
+
+      if (result === null) {
+        return res
+          .status(404)
+          .json({ status: 404, message: 'post dont exsite', payload: {} });
+      }
+
+      res.json({ status: 400, message: 'try agen', payload: { result } });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   //
-  app.post('/creat-catagory', async (req, res, next) => {
-    const { name, parent_id } = req.body;
 
-    const result = await logic.CreatCatagory({ name, parent_id });
-
-    if (result === 400) {
-      return res.json({ status: 400, message: 'try agen', payload: {} });
-    }
-
-    return res.json({ status: 200, message: '', payload: { result } });
-  });
+  // Get Comment
+  // Create Comment
+  // delete Comment
 };
-
-// let payload = {
-//   response: {
-//     {name: "akhbar",children:{
-//       root:{
-//         id,
-//         naem
-//       }
-
-//     }}
-//   }
-// }
-
-// let x = {
-//   tit:'a',
-//   d:'d',
-//   catagory:{
-//       a:{id:"dwd231",naem:"a",chil:[a-1:{},a-2:{}]}
-
-//   }
-
-// }

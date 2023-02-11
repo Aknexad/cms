@@ -8,7 +8,7 @@ class BlogRepository {
 
     try {
       const post = await postModel.create({
-        titel: data.title,
+        title: data.title,
         description: data.description,
         content: data.content,
         authoer: data.authoer,
@@ -25,34 +25,7 @@ class BlogRepository {
 
   async GetPostById(id) {
     try {
-      if (id === null) {
-        const allPost = await postModel.aggregate([
-          {
-            $lookup: {
-              from: 'blogcatagories',
-              localField: 'catagory',
-              foreignField: '_id',
-              as: 'cat',
-            },
-          },
-
-          {
-            $project: {
-              _id: '$_id',
-              title: '$titel',
-              description: '$description',
-              content: '$content',
-              authoer: '$authoer',
-              cover: '$cover',
-              catagory: '$cat',
-            },
-          },
-        ]);
-
-        return allPost;
-      }
-
-      const allPost = await postModel.aggregate([
+      const post = await postModel.aggregate([
         {
           $match: {
             _id: Mongoose.Types.ObjectId(id),
@@ -78,7 +51,7 @@ class BlogRepository {
           },
         },
       ]);
-      return allPost;
+      return post;
     } catch (error) {
       throw new Error('internal server error');
     }
@@ -86,9 +59,64 @@ class BlogRepository {
 
   async GetAllPost() {
     try {
-      const posts = await postModel.find();
+      const allPost = await postModel.aggregate([
+        {
+          $lookup: {
+            from: 'blogcatagories',
+            localField: 'catagory',
+            foreignField: '_id',
+            as: 'cat',
+          },
+        },
 
-      return posts;
+        {
+          $project: {
+            _id: '$_id',
+            title: '$titel',
+            description: '$description',
+            content: '$content',
+            authoer: '$authoer',
+            cover: '$cover',
+            catagory: '$cat',
+          },
+        },
+      ]);
+
+      return allPost;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async UpdatePost(id, data) {
+    try {
+      const post = await postModel.findByIdAndUpdate(id, {
+        title: data.title,
+        description: data.description,
+        content: data.content,
+        cover: data.cover,
+        catagory: data.catagory,
+      });
+
+      return post;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async DeletePost(id) {
+    try {
+      const deletePost = await postModel.deleteOne({ _id: id });
+      return deletePost;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async FindOne(id) {
+    try {
+      const data = await postModel.findById(id);
+      return data;
     } catch (error) {
       throw new Error(error);
     }

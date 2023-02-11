@@ -1,7 +1,7 @@
-const arrayToTree = (arr, parent = null) =>
-  arr
-    .filter(item => item.parent_id === parent)
-    .map(child => ({ ...child, children: arrayToTree(arr, child._id) }));
+// const arrayToTree = (arr, parent = null) =>
+//   arr
+//     .filter(item => item.parent_id === parent)
+//     .map(child => ({ ...child, children: arrayToTree(arr, child._id) }));
 
 // function creatTree(arr, parent_id) {
 //   if (arr.length <= 0) return result;
@@ -10,4 +10,20 @@ const arrayToTree = (arr, parent = null) =>
 
 // }
 
-module.exports = arrayToTree;
+const buildTreeData = (arr, parent_id = null) => {
+  if (arr.length === 0) return;
+  let result = arr
+    .filter(item => item.parent_id === parent_id)
+    .map(
+      child =>
+        new Object({
+          _id: child._id,
+          name: child.name,
+          children: buildTreeData(arr, child._id),
+        })
+    );
+
+  return result;
+};
+
+module.exports = buildTreeData;
