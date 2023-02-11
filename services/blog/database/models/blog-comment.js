@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const BlogCommentSchema = new mongoose.Schema({
-  userId: { type: String },
+  postId: { type: String, requierd: true },
+  name: { type: String },
   content: { type: String },
-  replay: [String],
+  crateAt: { type: Date, default: Date.now() },
 });
 
 const BlogComment = mongoose.model('BlogComment', BlogCommentSchema);

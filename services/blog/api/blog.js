@@ -157,6 +157,76 @@ module.exports = async app => {
   //
 
   // Get Comment
+
+  app.get('/posts/comment', async (req, res, next) => {
+    try {
+      const postId = req.query.postId;
+
+      if (postId === undefined) {
+        return res.status(400).json({
+          status: 400,
+          message: 'id of post must be set',
+          payload: {},
+        });
+      }
+
+      const result = await logic.GetCommentForPost(postId);
+
+      if (result.length === 0) {
+        return res.status(404).json({
+          status: 404,
+          message: 'no comment for this post ',
+          payload: {},
+        });
+      }
+      res.status(200).json({ status: 200, message: '', payload: { result } });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Create Comment
+
+  app.post('/posts/comment', async (req, res, next) => {
+    try {
+      const { payload } = req.body;
+
+      const result = await logic.CreateCommentForPost(payload);
+
+      if (!result) {
+        return res
+          .status(404)
+          .json({ status: 404, message: 'try agen', payload: {} });
+      }
+
+      res
+        .status(200)
+        .json({ status: 200, message: 'comment add', payload: { result } });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // delete Comment
+  app.delete('/posts/comment', async (req, res, next) => {
+    try {
+      const id = req.body.id;
+
+      const result = await logic.DeleteOnComment(id);
+
+      if (result.acknowledged === false || result.deletedCount === 0) {
+        return res.status(400).json({
+          status: 400,
+          message: 'comment dot delete try agen',
+          payload: {},
+        });
+      }
+
+      res
+        .status(200)
+        .json({ status: 200, message: 'comment delete', payload: {} });
+    } catch (error) {
+      next(error);
+    }
+  });
 };

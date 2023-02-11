@@ -14,9 +14,7 @@ class catagoryRepository {
       throw new Error(error);
     }
   }
-  // teting creat catagory
 
-  //
   //
   async GetCatagory() {
     try {

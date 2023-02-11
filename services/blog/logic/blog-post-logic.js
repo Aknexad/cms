@@ -1,5 +1,8 @@
 // repository
-const BlogPostRepo = require('../database/reposotory/blog-post-repository');
+const {
+  BlogRepository,
+  CommentRepository,
+} = require('../database/reposotory/blog-post-repository');
 const BlogCatagoryRepo = require('../database/reposotory/blog-catagory-repository');
 
 // middlewares
@@ -8,8 +11,9 @@ const paginatingData = require('../middlewares/pagination-logic');
 
 class BlogLogic {
   constructor() {
-    this.postRepository = new BlogPostRepo();
+    this.postRepository = new BlogRepository();
     this.catagoryRepo = new BlogCatagoryRepo();
+    this.commentRepo = new CommentRepository();
   }
 
   //
@@ -135,6 +139,28 @@ class BlogLogic {
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  // comment
+
+  async GetCommentForPost(id) {
+    const postComment = await this.commentRepo.GetComment(id);
+
+    return postComment;
+  }
+
+  //
+  async CreateCommentForPost(payload) {
+    const postComment = await this.commentRepo.CreateComment(payload);
+
+    return postComment;
+  }
+
+  //
+  async DeleteOnComment(id) {
+    const postComment = await this.commentRepo.DeleteComment(id);
+
+    return postComment;
   }
 }
 

@@ -1,5 +1,6 @@
 const Mongoose = require('mongoose');
 const postModel = require('../models/blog-post');
+const commentModel = require('../models/blog-comment');
 
 class BlogRepository {
   async CreatePost(data) {
@@ -123,4 +124,57 @@ class BlogRepository {
   }
 }
 
-module.exports = BlogRepository;
+class CommentRepository {
+  async GetComment(id) {
+    try {
+      const comment = await commentModel.aggregate([
+        {
+          $match: {
+            postId: id,
+          },
+        },
+        {
+          $project: {
+            name: '$name',
+            content: '$content',
+            data: '$crateAt',
+          },
+        },
+        {
+          $sort: {
+            data: 1,
+          },
+        },
+      ]);
+
+      return comment;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  async CreateComment(payload) {
+    try {
+      const createComment = await commentModel.create({
+        postId: payload.postId,
+        name: payload.name,
+        content: payload.content,
+      });
+
+      return createComment;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  //
+  async DeleteComment(id) {
+    try {
+      const deleteed = await commentModel.deleteOne({ _id: id });
+      return deleteed;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+}
+
+module.exports = { BlogRepository, CommentRepository };
