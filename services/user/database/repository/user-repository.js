@@ -104,9 +104,9 @@ class UserRepositoty {
     const user = await userModel.findById(id);
     if (!user) throw new Error('user dont exsit');
 
-    user.secret.key = secret.secret;
-    user.secret.qrcode = secret.qr;
-    user.save();
+    user.secret.key = secret.base32;
+    user.secret.qrcode = secret.otpauth_url;
+    await user.save();
     return secret;
   }
 

@@ -15,7 +15,7 @@ const {
 module.exports = async (app, passport, channel) => {
   const logic = new UserLogic();
 
-  app.post('/register', async (req, res, next) => {
+  app.post('/register', registerValidation, async (req, res, next) => {
     try {
       const { username, password } = req.body;
 

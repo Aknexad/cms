@@ -16,7 +16,6 @@ const {
 
 const extractVerifyJwt = require('../middlewares/extractorJwt');
 const generateSecrat = require('../middlewares/passport/genarate-secrat');
-const genarateSecrate = require('../middlewares/passport/genarate-secrat');
 
 class UserLogic {
   constructor() {
@@ -143,7 +142,8 @@ class UserLogic {
         status,
         method
       );
-      const secret = genarateSecrate(id);
+      const secret = generateSecrat(id);
+
       const updateSecret = await this.repository.UpdateSecret(id, secret);
       if (!updateSecret) throw new Error('try agen');
 
@@ -180,7 +180,7 @@ class UserLogic {
 
     const saveToekn = await this.repository.UpdateTempToken(
       id,
-      tempToken.secret
+      tempToken.base32
     );
 
     if (!saveToekn) throw new Error('somting dont work try agen');

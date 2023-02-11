@@ -9,7 +9,7 @@ function registerValidation(req, res, next) {
   console.log(userInput);
 
   const schema = Joi.object({
-    username: Joi.string().min(3).required,
+    username: Joi.string().min(3).required(),
     password: Joi.string()
       .min(3)
       .required()
@@ -18,8 +18,11 @@ function registerValidation(req, res, next) {
 
   const result = schema.validate(userInput);
 
-  console.error(result.error);
-  if (result.error !== null) throw new Error(result.error.message);
+  console.error(result);
+
+  if (result.error) {
+    res.json({ status: '', message: result.error.message });
+  }
 
   next();
 }
