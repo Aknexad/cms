@@ -1,6 +1,6 @@
 FROM node:18
 
-WORKDIR /app/user_service
+WORKDIR /app/bolg_service
 
 COPY package.json .
 
@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["npm", "start"]
