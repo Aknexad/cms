@@ -13,9 +13,9 @@ module.exports = async app => {
   // Get Post
   app.get('/posts', async (req, res, next) => {
     try {
-      const { id, page } = req.query;
+      const { id, pageNum, pageSize } = req.query;
 
-      const posts = await logic.GetPostLogic(id, page);
+      const posts = await logic.GetPostLogic(id, pageNum, pageSize);
 
       res.json({ status: 200, message: 'post added', payload: { posts } });
     } catch (error) {

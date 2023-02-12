@@ -58,9 +58,15 @@ class BlogRepository {
     }
   }
 
-  async GetAllPost() {
+  async GetAllPost(data) {
     try {
       const allPost = await postModel.aggregate([
+        {
+          $skip: data.skip,
+        },
+        {
+          $limit: data.limit,
+        },
         {
           $lookup: {
             from: 'blogcatagories',
@@ -69,11 +75,10 @@ class BlogRepository {
             as: 'cat',
           },
         },
-
         {
           $project: {
             _id: '$_id',
-            title: '$titel',
+            title: '$title',
             description: '$description',
             content: '$content',
             authoer: '$authoer',

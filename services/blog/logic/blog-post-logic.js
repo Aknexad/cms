@@ -25,7 +25,7 @@ class BlogLogic {
   }
 
   // return post all id and by catagory
-  async GetPostLogic(id, page) {
+  async GetPostLogic(id, pageNum, pageSize) {
     try {
       // by id
       if (id !== undefined) {
@@ -46,7 +46,8 @@ class BlogLogic {
       }
 
       // all
-      let getAllPost = await this.postRepository.GetAllPost();
+      const data = paginatingData(pageNum, pageSize);
+      let getAllPost = await this.postRepository.GetAllPost(data);
       // replace catagory  object white tree data
       const cat = getAllPost.map(x => {
         const convertId = JSON.parse(JSON.stringify(x.catagory));
@@ -56,8 +57,6 @@ class BlogLogic {
         return (x.catagory = formatingCatagory);
       });
       getAllPost.catagory = cat;
-
-      // const data = paginatingData(getAllPost, 4);
 
       return getAllPost;
     } catch (error) {

@@ -1,10 +1,10 @@
-function paginatingData(data, totalDoc, page = 1, limit = 2) {
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
+function paginatingData(pageNumber = 1, pageSize = 10) {
+  let skip = parseInt(pageSize) * (parseFloat(pageNumber) - 1);
 
-  const result = [...data];
+  skip = parseInt(skip);
+  let limit = parseInt(pageSize);
 
-  return result.slice(startIndex, endIndex);
+  return { skip, limit };
 }
 
 module.exports = paginatingData;
