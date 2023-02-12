@@ -10,10 +10,13 @@ const loginType = require('../middlewares/loginType');
 const {
   PublishMessage,
   SubscribMessage,
+  RPCObserver,
 } = require('../middlewares/message-broker');
 
 module.exports = async (app, passport, channel) => {
   const logic = new UserLogic();
+
+  RPCObserver('BRPC', logic);
 
   app.post('/register', registerValidation, async (req, res, next) => {
     try {
@@ -38,8 +41,6 @@ module.exports = async (app, passport, channel) => {
         const { userInput } = req.body;
 
         const data = `${userInput} login`;
-
-        PublishMessage(channel, process.env.TESTING_BINDING_KEY, data);
         const result = await logic.UserLogin(userInput);
 
         res.json(result);

@@ -1,8 +1,7 @@
-// const amqplib = require('amqplib');
-// ``;
-// const { v4: uuid4 } = require('uuid');
+const amqplib = require('amqplib');
+const { v4: uuid4 } = require('uuid');
 
-// require('dotenv').config({ path: './config/.env' });
+require('dotenv').config({ path: './config/.env' });
 
 const MB_URL = {
   protocol: 'amqp',
@@ -20,10 +19,20 @@ const SHOPING_BINDING_KEY = process.env.TESTING_BINDING_KEY;
 const USER_BINDING_KEY = process.env.USER_BINDING_KEY;
 
 //
+//
+
+let amqplibConnection = null;
+
+const getChannel = async () => {
+  if (amqplibConnection === null) {
+    amqplibConnection = await amqplib.connect(MB_URL);
+  }
+  return await amqplibConnection.createChannel();
+};
+
 module.exports.CrateChannel = async () => {
   try {
-    const connection = await amqplib.connect(MB_URL);
-    const channel = await connection.createChannel();
+    const channel = await getChannel();
     await channel.assertExchange(EXCHANGE_NAME, 'direct', false);
     return channel;
   } catch (error) {
@@ -54,32 +63,7 @@ module.exports.SubscribMessage = async (channel, service, bindingKey) => {
   });
 };
 
-//
-//
-//
-//
-
-let amqplibConnection = null;
-
-const getChannel = async () => {
-  if (amqplibConnection === null) {
-    amqplibConnection = await amqplib.connect(MB_URL);
-  }
-  return await amqplibConnection.createChannel();
-};
-
-const expensiveDBOperation = (payload, fakeResponse) => {
-  console.log(payload);
-  console.log(fakeResponse);
-
-  return new Promise((res, rej) => {
-    setTimeout(() => {
-      res(fakeResponse);
-    }, 3000);
-  });
-};
-
-const RPCObserver = async (RPC_QUEUE_NAME, fakeResponse) => {
+module.exports.RPCObserver = async (RPC_QUEUE_NAME, logic) => {
   const channel = await getChannel();
   await channel.assertQueue(RPC_QUEUE_NAME, {
     durable: false,
@@ -91,7 +75,7 @@ const RPCObserver = async (RPC_QUEUE_NAME, fakeResponse) => {
       if (msg.content) {
         // DB Operation
         const payload = JSON.parse(msg.content.toString());
-        const response = await expensiveDBOperation(payload, fakeResponse); // call fake DB operation
+        const response = await logic.serverRpcRequest(payload);
 
         channel.sendToQueue(
           msg.properties.replyTo,
@@ -151,13 +135,7 @@ const requestData = async (RPC_QUEUE_NAME, requestPayload, uuid) => {
   }
 };
 
-const RPCRequest = async (RPC_QUEUE_NAME, requestPayload) => {
+module.exports.RPCRequest = async (RPC_QUEUE_NAME, requestPayload) => {
   const uuid = uuid4(); // correlationId
   return await requestData(RPC_QUEUE_NAME, requestPayload, uuid);
-};
-
-module.exports = {
-  getChannel,
-  RPCObserver,
-  RPCRequest,
 };

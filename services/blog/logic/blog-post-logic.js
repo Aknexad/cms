@@ -9,6 +9,9 @@ const BlogCatagoryRepo = require('../database/reposotory/blog-catagory-repositor
 const buildTreeData = require('../middlewares/recursion-array-tree');
 const paginatingData = require('../middlewares/pagination-logic');
 
+// Rabbit MQ
+const { RPCRequest } = require('../middlewares/message-broker');
+
 class BlogLogic {
   constructor() {
     this.postRepository = new BlogRepository();
@@ -38,9 +41,15 @@ class BlogLogic {
 
         const formatedCatagory = buildTreeData(formatCat);
 
-        getPost[0].catagory = formatedCatagory;
+        const authoer = await RPCRequest('BRPC', {
+          type: 'getName',
+          data: getPost[0].authoer,
+        });
 
-        if (!getPost) return 404;
+        getPost[0].catagory = formatedCatagory;
+        getPost[0].authoer = authoer;
+
+        if (!getPost) throw new Error('post Dont exist');
 
         return getPost;
       }

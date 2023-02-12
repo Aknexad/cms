@@ -17,6 +17,8 @@ const {
 const extractVerifyJwt = require('../middlewares/extractorJwt');
 const generateSecrat = require('../middlewares/passport/genarate-secrat');
 
+const { RPCObserver } = require('../middlewares/message-broker');
+
 class UserLogic {
   constructor() {
     this.repository = new UserRepository();
@@ -208,6 +210,12 @@ class UserLogic {
     } catch (error) {
       return error;
     }
+  }
+
+  async serverRpcRequest(data) {
+    const getUsername = await this.repository.FindUserById(data.data);
+
+    return getUsername.username;
   }
 }
 

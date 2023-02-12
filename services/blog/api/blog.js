@@ -2,6 +2,8 @@ require('dotenv').config({ path: './config/.env' });
 
 const BogLogic = require('../logic/blog-post-logic');
 
+const { RPCObserver, RPCRequest } = require('../middlewares/message-broker');
+
 //middlewares
 
 // endpoint

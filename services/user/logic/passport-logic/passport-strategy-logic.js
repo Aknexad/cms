@@ -1,8 +1,6 @@
 const bcrypt = require('bcrypt');
 const speakeasy = require('speakeasy');
 
-const GoogleAuthenticator = require('passport-2fa-totp').GoogeAuthenticator;
-
 require('dotenv').config({ path: './config/.env' });
 
 const UserRepository = require('../../database/repository/user-repository');
