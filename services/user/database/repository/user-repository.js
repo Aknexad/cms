@@ -7,8 +7,6 @@ class UserRepositoty {
       password: passowrd,
     });
 
-    if (!user) throw new Error('Internal Server Error');
-
     const result = await user.save();
     return result;
   }
@@ -16,27 +14,35 @@ class UserRepositoty {
   // find user
   async FindUser(username) {
     const user = await userModel.findOne({ username: username });
-    // if (user === null) throw new Error('user dont exsit');
+
     return user;
   }
 
   async FindUserById(id) {
-    const user = await userModel.findById(id);
-    if (!user) throw new Error('user dont exsit');
-    return user;
+    try {
+      const user = await userModel.findById(id);
+
+      return user;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
-  async FindByCusromFiled(input) {
-    const byUsername = await userModel.findOne({ username: input });
-    if (byUsername) return byUsername;
+  async FindByCustomFiled(input) {
+    try {
+      const byUsername = await userModel.findOne({ username: input });
+      if (byUsername) return byUsername;
 
-    const byEmail = await userModel.findOne({ email: input });
-    if (byEmail) return byEmail;
+      const byEmail = await userModel.findOne({ email: input });
+      if (byEmail) return byEmail;
 
-    const byPhone = await userModel.findOne({ phone: input });
-    if (byPhone) return byPhone;
+      const byPhone = await userModel.findOne({ phone: input });
+      if (byPhone) return byPhone;
 
-    throw new Error('user dont exist');
+      throw new Error('user dont exist');
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   // cheahc

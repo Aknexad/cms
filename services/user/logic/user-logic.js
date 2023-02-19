@@ -215,6 +215,8 @@ class UserLogic {
   async serverRpcRequest(data) {
     const getUsername = await this.repository.FindUserById(data.data);
 
+    if (!getUsername) return 'Anonymous Author';
+
     return getUsername.username;
   }
 }

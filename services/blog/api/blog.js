@@ -48,12 +48,6 @@ module.exports = async app => {
 
       const result = await logic.UpdatePost(id, payload);
 
-      if (result === null) {
-        return res
-          .status(404)
-          .json({ status: 404, message: 'post dont exsite', payload: {} });
-      }
-
       return res.json({
         status: 200,
         message: 'post updated',
@@ -71,12 +65,6 @@ module.exports = async app => {
       const { id } = req.body;
 
       const result = await logic.DeletePost(id);
-
-      if (result === null) {
-        return res
-          .status(404)
-          .json({ status: 404, message: 'post dont exsite', payload: {} });
-      }
 
       res.json({ status: 200, message: '', payload: { result } });
     } catch (error) {
@@ -120,12 +108,6 @@ module.exports = async app => {
 
       const result = await logic.UpdateCatagory(id, naem, parent_id);
 
-      if (result === null) {
-        return res
-          .status(404)
-          .json({ status: 404, message: 'catagory dont exsite', payload: {} });
-      }
-
       res.json({
         status: 200,
         message: 'catagory updated',
@@ -143,12 +125,6 @@ module.exports = async app => {
       const { id } = req.body;
 
       const result = await logic.DeleteCatagory(id);
-
-      if (result === null) {
-        return res
-          .status(404)
-          .json({ status: 404, message: 'post dont exsite', payload: {} });
-      }
 
       res.json({ status: 400, message: 'try agen', payload: { result } });
     } catch (error) {

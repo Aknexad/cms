@@ -11,7 +11,7 @@ class StrategyLogic {
   //   local startgy logic for username
   async LocalAuthByUsernaem(userInput, password, done) {
     try {
-      const user = await userRepo.FindByCusromFiled(userInput);
+      const user = await userRepo.FindByCustomFiled(userInput);
 
       if (!user) return done(null, false);
 
@@ -96,7 +96,7 @@ class StrategyLogic {
     try {
       const { userInput, password } = req.body;
 
-      const user = await userRepo.FindByCusromFiled(userInput);
+      const user = await userRepo.FindByCustomFiled(userInput);
 
       if (user === null) return done(null, false);
       if (user.otpAuth === false) throw new Error('you dont enabel otp ');

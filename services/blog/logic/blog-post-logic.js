@@ -34,6 +34,8 @@ class BlogLogic {
       if (id !== undefined) {
         let getPost = await this.postRepository.GetPostById(id);
 
+        if (!getPost) throw new Error('Post dont exist');
+
         const cat = getPost[0].catagory;
 
         // replace catagory by tree data of catagory
@@ -48,8 +50,6 @@ class BlogLogic {
 
         getPost[0].catagory = formatedCatagory;
         getPost[0].authoer = authoer;
-
-        if (!getPost) throw new Error('post Dont exist');
 
         return getPost;
       }
@@ -74,26 +74,18 @@ class BlogLogic {
   }
 
   async UpdatePost(id, payload) {
-    try {
-      const chackPost = await this.postRepository.FindOne(id);
-      if (!chackPost) {
-        return chackPost;
-      }
+    const chackPost = await this.postRepository.FindOne(id);
+    if (!chackPost) throw new Error('post dose not exist');
 
-      const updatePost = await this.postRepository.UpdatePost(id, payload);
+    const updatePost = await this.postRepository.UpdatePost(id, payload);
 
-      return updatePost;
-    } catch (error) {
-      throw new Error(error);
-    }
+    return updatePost;
   }
 
   async DeletePost(id) {
     try {
       const chackPost = await this.postRepository.FindOne(id);
-      if (!chackPost) {
-        return chackPost;
-      }
+      if (!chackPost) throw new Error('post dose not exist');
 
       const deleteed = await this.postRepository.DeletePost(id);
       return deleteed;
@@ -109,12 +101,12 @@ class BlogLogic {
   async CreatCatagory(data) {
     const create = await this.catagoryRepo.CreateCatagoty(data);
 
-    if (!create) return 400;
     return create;
   }
 
   async GetCatagory() {
     const cat = await this.catagoryRepo.GetCatagory();
+    if (cat.length === 0) throw new Error('no existing catagory');
 
     const strfy = JSON.stringify(cat);
     const parser = JSON.parse(strfy);
@@ -127,7 +119,7 @@ class BlogLogic {
 
   async UpdateCatagory(id, name, parent_id) {
     const chackCat = await this.catagoryRepo.FindById(id);
-    if (!chackCat) return chackCat;
+    if (!chackCat) throw new Error('catagory dosent exist');
 
     const updateResulre = await this.catagoryRepo.UpdateCatagory(
       id,
@@ -140,7 +132,7 @@ class BlogLogic {
   async DeleteCatagory(id) {
     try {
       const chackCat = await this.catagoryRepo.FindById(id);
-      if (!chackCat) return chackCat;
+      if (!chackCat) throw new Error('catagory dosent exist');
 
       const deleteResult = await this.catagoryRepo.DeleteCatagory(id);
       return deleteResult;
