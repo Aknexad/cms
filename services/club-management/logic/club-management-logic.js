@@ -35,6 +35,16 @@ class ClubManagementLogic {
     return updateTeam;
   }
 
+  async addStaffToTeamLogice(payload) {
+    const addStaff = await this.clubRepo.AddStaffToTeam(
+      payload.teamId,
+      payload.playerId,
+      payload.cocheId
+    );
+
+    return addStaff;
+  }
+
   //delete team
 
   async DeleteTeam(id) {

@@ -6,8 +6,8 @@ const TeamsSchema = new mongoose.Schema({
   logo: { type: String },
 
   squad: {
-    player: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Person' }],
-    cotch: { type: mongoose.Schema.Types.ObjectId, ref: 'Preron' },
+    player: [{ type: mongoose.Schema.Types.ObjectId }],
+    cotch: { type: mongoose.Schema.Types.ObjectId },
   },
   competition: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Competition' }],
 });

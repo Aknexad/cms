@@ -47,6 +47,24 @@ class ClubReposotory {
     }
   }
 
+  // add to squad
+  async AddStaffToTeam(id, playerId, cocheId) {
+    const query = await teamModel.findById(id);
+
+    if (!query) return query;
+
+    query.squad.player.push(Mongoose.Types.ObjectId(playerId));
+    query.squad.cotch = Mongoose.Types.ObjectId(cocheId);
+
+    query.save();
+
+    return query;
+  }
+
+  // delete staff form teams
+
+  async DeleteStaffFormTeams(staffId) {}
+
   // delete team
   async DeleteTeam(id) {
     try {
