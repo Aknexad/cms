@@ -158,9 +158,132 @@ class ClubReposotory {
   //
 
   // Get Matches
+  async GetAllMateches() {
+    const query = await matchesModel.aggregate([
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'hust',
+          foreignField: '_id',
+          as: 'hust',
+        },
+      },
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'gust',
+          foreignField: '_id',
+          as: 'gust',
+        },
+      },
+      {
+        $lookup: {
+          from: 'competitions',
+          localField: 'competition',
+          foreignField: '_id',
+          as: 'competitions',
+        },
+      },
+      {
+        $project: {
+          _id: '$_id',
+          hust: '$hust',
+          gust: '$gust',
+          competition: '$competitions',
+        },
+      },
+    ]);
+    return query;
+  }
+  async GetMatchById(id) {
+    const query = await matchesModel.aggregate([
+      {
+        $match: {
+          _id: Mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'hust',
+          foreignField: '_id',
+          as: 'hust',
+        },
+      },
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'gust',
+          foreignField: '_id',
+          as: 'gust',
+        },
+      },
+      {
+        $lookup: {
+          from: 'competitions',
+          localField: 'competition',
+          foreignField: '_id',
+          as: 'competitions',
+        },
+      },
+      {
+        $project: {
+          _id: '$_id',
+          hust: '$hust',
+          gust: '$gust',
+          competition: '$competitions',
+        },
+      },
+    ]);
+
+    return query;
+  }
+
+  async GetMatchesByCompetition(id) {
+    const query = await matchesModel.aggregate([
+      {
+        $match: {
+          competition: Mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'hust',
+          foreignField: '_id',
+          as: 'hust',
+        },
+      },
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'gust',
+          foreignField: '_id',
+          as: 'gust',
+        },
+      },
+      {
+        $lookup: {
+          from: 'competitions',
+          localField: 'competition',
+          foreignField: '_id',
+          as: 'competitions',
+        },
+      },
+      {
+        $project: {
+          _id: '$_id',
+          hust: '$hust',
+          gust: '$gust',
+          competition: '$competitions',
+        },
+      },
+    ]);
+
+    return query;
+  }
 
   // Create Match
-
   async CreateMatch(data) {
     const query = await matchesModel.create({
       title: data.title,
@@ -170,6 +293,42 @@ class ClubReposotory {
     });
 
     return query;
+  }
+
+  // update Matches
+  async UpdateMatcheTitle(id, title) {
+    const query = await matchesModel.findByIdAndUpdate(id, { title: title });
+    return query;
+  }
+
+  async ChangeMatcheTeams(id, hustId, gustId) {
+    const query = await matchesModel.findById(id);
+
+    if (!query) return query;
+
+    query.hust = Mongoose.Types.ObjectId(hustId);
+    query.gust = Mongoose.Types.ObjectId(gustId);
+
+    query.save();
+
+    return query;
+  }
+
+  async ChangeMatcheCompetiton(id, cptId) {
+    const query = await matchesModel.findById(id);
+
+    if (!query) return query;
+
+    query.competition = Mongoose.Types.ObjectId(cptId);
+
+    query.save();
+
+    return query;
+  }
+
+  // delete Matche
+  async DeleteMatche(id) {
+    return await matchesModel.findByIdAndDelete(id);
   }
 }
 

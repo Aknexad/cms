@@ -128,9 +128,19 @@ module.exports = async app => {
   //
 
   // get matches
+  app.get('/matches', async (req, res, next) => {
+    try {
+      const { matchId, competitionId } = req.query;
 
-  // crate
+      const result = await logic.GetMatchesLogic({ matchId, competitionId });
 
+      res.json({ status: 200, massage: '', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // crate match
   app.post('/matches', async (req, res, next) => {
     try {
       const { title, hust, gust, cpt } = req.body;
@@ -144,5 +154,35 @@ module.exports = async app => {
 
   // update
 
+  app.put('/matches', async (req, res, next) => {
+    try {
+      const { id, title, hustId, gustId, cptId } = req.body;
+
+      const result = await logic.UpdateMatchesLogice({
+        id,
+        title,
+        hustId,
+        gustId,
+        cptId,
+      });
+
+      res.json({ status: 200, massage: '', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // delete
+
+  app.delete('/matches', async (req, res, next) => {
+    try {
+      const id = req.body.id;
+
+      const result = await logic.DeleteMatche(id);
+
+      res.json({ status: 200, massage: 'matche deleted', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
 };

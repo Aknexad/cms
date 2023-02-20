@@ -129,13 +129,74 @@ class ClubManagementLogic {
   // Matches
   //
 
-  //   get
+  // Get matches
+  async GetMatchesLogic(payload) {
+    if (payload.matchId) {
+      const match = await this.clubRepo.GetMatchById(payload.matchId);
+
+      if (!match) throw new Error('match with this id dont exsit');
+      return match;
+    }
+
+    if (payload.competitionId) {
+      const match = await this.clubRepo.GetMatchesByCompetition(
+        payload.competitionId
+      );
+
+      if (!match) throw new Error('match with this competitions dont exsit');
+      return match;
+    }
+
+    const allMatche = await this.clubRepo.GetAllMateches();
+    return allMatche;
+  }
 
   // create match
-
   async CreateMatch(data) {
     const create = await this.clubRepo.CreateMatch(data);
     return create;
+  }
+
+  // Upadate Matches
+  async UpdateMatchesLogice(payload) {
+    if (payload.title) {
+      const updateTitle = await this.clubRepo.UpdateMatcheTitle(
+        payload.id,
+        payload.title
+      );
+
+      if (!updateTitle) throw new Error('math with this id Dont exist');
+
+      return updateTitle;
+    }
+
+    if (payload.cptId) {
+      const changeCompetition = await this.clubRepo.ChangeMatcheCompetiton(
+        payload.id,
+        payload.cptId
+      );
+      if (!changeCompetition) throw new Error('math with this id Dont exist');
+
+      return changeCompetition;
+    }
+
+    const changeTeam = await this.clubRepo.ChangeMatcheTeams(
+      payload.id,
+      payload.hustId,
+      payload.gustId
+    );
+    if (!changeTeam) throw new Error('math with this id Dont exist');
+
+    return changeTeam;
+  }
+
+  // delete Matche
+  async DeleteMatche(id) {
+    const deleteMatch = await this.clubRepo.DeleteMatche(id);
+
+    if (!deleteMatch) throw new Error('matche doset exist');
+
+    return deleteMatch;
   }
 }
 

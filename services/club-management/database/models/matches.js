@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const MatchesSchema = new mongoose.Schema({
   title: String,
-  hust: String,
-  gust: String,
+  hust: { type: mongoose.Schema.Types.ObjectId },
+  gust: { type: mongoose.Schema.Types.ObjectId },
   game_date: { type: Date, default: Date.now() },
   competition: { type: mongoose.Schema.Types.ObjectId },
 });
