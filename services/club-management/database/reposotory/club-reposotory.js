@@ -1,8 +1,10 @@
 const teamModel = require('../models/team');
+const competitionsModel = require('../models/competition');
+const Mongoose = require('mongoose');
 
 class ClubReposotory {
   //
-  // Team DB opration
+  // Team DB CRUD
   //
 
   // GetTeams
@@ -52,8 +54,103 @@ class ClubReposotory {
   }
 
   //
-  // comptions
+  // competitions CRUD
   //
+
+  // Get competitions
+  async GetCompetitionOnlyTitle() {
+    return competitionsModel.find().select('title');
+  }
+
+  async GetCompetitionAll(id) {
+    return 'await competitionsModel.aggregate();';
+  }
+  async GetCompetitionWithTeams(id) {
+    return await competitionsModel.aggregate([
+      {
+        $match: {
+          _id: Mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'teams',
+          foreignField: '_id',
+          as: 'result',
+        },
+      },
+      {
+        $project: {
+          _id: '$_id',
+          title: '$title',
+          teams: '$result',
+        },
+      },
+    ]);
+  }
+  async GetCompetitionWithMatches(id) {
+    return await competitionsModel.aggregate([
+      {
+        $match: {
+          _id: Mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'matches',
+          localField: 'match',
+          foreignField: '_id',
+          as: 'result',
+        },
+      },
+      {
+        $project: {
+          _id: '$_id',
+          title: '$title',
+          match: '$result',
+        },
+      },
+    ]);
+  }
+
+  // crate competitions
+  async CreateCompetition(title) {
+    return await competitionsModel.create({ title: title });
+  }
+
+  // Update competitions
+  async UpdateTitelOfCompetitions(id, title) {
+    return await competitionsModel.findByIdAndUpdate(id, {
+      title: title,
+    });
+  }
+  async UpdateTeamsOfCompetitions(id, teamId) {
+    const query = await competitionsModel.findById(id);
+
+    if (!query) return query;
+
+    query.teams.push(Mongoose.Types.ObjectId(teamId));
+    query.save();
+
+    return query;
+  }
+  async UpdateMatchesOfCompetitions(id, matchId) {
+    const query = await competitionsModel.findById(id);
+
+    if (!query) return query;
+
+    query.match.push(Mongoose.Types.ObjectId(matchId));
+    query.save();
+
+    return query;
+  }
+
+  // delete competitions
+  async DeleteCompetitionDocument(id) {
+    const query = await this.competitionsModel.findByIdAndDelete(id);
+    return query;
+  }
 }
 
 module.exports = ClubReposotory;

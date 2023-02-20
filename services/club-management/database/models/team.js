@@ -9,6 +9,7 @@ const TeamsSchema = new mongoose.Schema({
     player: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Person' }],
     cotch: { type: mongoose.Schema.Types.ObjectId, ref: 'Preron' },
   },
+  competition: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Competition' }],
 });
 
 const Teams = mongoose.model('Teams', TeamsSchema);

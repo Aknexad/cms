@@ -65,6 +65,10 @@ module.exports = async app => {
   // Get competitions
   app.get('/competitions', async (req, res, next) => {
     try {
+      const { id, teams, matches } = req.query;
+
+      const result = await logic.GetCompetitionsLogic({ id, matches, teams });
+
       res.json({ status: 200, massage: '', payload: result });
     } catch (error) {
       next(error);
@@ -74,6 +78,14 @@ module.exports = async app => {
   // Create competitions
   app.post('/competitions', async (req, res, next) => {
     try {
+      const { title } = req.body;
+      const result = await logic.CreateNewCompetitions(title);
+
+      res.json({
+        status: 200,
+        massage: 'competitions created',
+        payload: result,
+      });
     } catch (error) {
       next(error);
     }
@@ -82,13 +94,28 @@ module.exports = async app => {
   // Update competitions
   app.put('/competitions', async (req, res, next) => {
     try {
+      const { id, title, teamId, matchId, runType } = req.body;
+
+      const result = await logic.UpdateCompetitionsFild({
+        id,
+        title,
+        teamId,
+        matchId,
+        runType,
+      });
+
+      res.json({ status: 200, massage: '', payload: result });
     } catch (error) {
+      console.error(error);
       next(error);
     }
   });
   // delete competitions
   app.delete('/competitions', async (req, res, next) => {
     try {
+      const id = req.body.id;
+
+      const result = await logic.DeleteComptition(id);
     } catch (error) {
       next(error);
     }
