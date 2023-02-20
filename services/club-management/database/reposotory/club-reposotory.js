@@ -1,6 +1,8 @@
+const Mongoose = require('mongoose');
+
 const teamModel = require('../models/team');
 const competitionsModel = require('../models/competition');
-const Mongoose = require('mongoose');
+const matchesModel = require('../models/matches');
 
 class ClubReposotory {
   //
@@ -61,7 +63,6 @@ class ClubReposotory {
   async GetCompetitionOnlyTitle() {
     return competitionsModel.find().select('title');
   }
-
   async GetCompetitionAll(id) {
     return 'await competitionsModel.aggregate();';
   }
@@ -148,7 +149,26 @@ class ClubReposotory {
 
   // delete competitions
   async DeleteCompetitionDocument(id) {
-    const query = await this.competitionsModel.findByIdAndDelete(id);
+    const query = await competitionsModel.findByIdAndDelete(id);
+    return query;
+  }
+
+  //
+  // Matches CRUD
+  //
+
+  // Get Matches
+
+  // Create Match
+
+  async CreateMatch(data) {
+    const query = await matchesModel.create({
+      title: data.title,
+      hust: data.hust,
+      gust: data.gust,
+      competition: Mongoose.Types.ObjectId(data.cpt),
+    });
+
     return query;
   }
 }

@@ -116,8 +116,33 @@ module.exports = async app => {
       const id = req.body.id;
 
       const result = await logic.DeleteComptition(id);
+
+      res.json({ status: 200, massage: '', payload: result });
     } catch (error) {
       next(error);
     }
   });
+
+  //
+  // Matches endpoint
+  //
+
+  // get matches
+
+  // crate
+
+  app.post('/matches', async (req, res, next) => {
+    try {
+      const { title, hust, gust, cpt } = req.body;
+
+      const result = await logic.CreateMatch({ title, hust, gust, cpt });
+      res.json({ status: 200, massage: '', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // update
+
+  // delete
 };

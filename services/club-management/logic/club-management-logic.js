@@ -120,10 +120,22 @@ class ClubManagementLogic {
   }
 
   // delete competitions
-
   async DeleteComptition(id) {
     const deleteCompetition = await this.clubRepo.DeleteCompetitionDocument(id);
     return deleteCompetition;
+  }
+
+  //
+  // Matches
+  //
+
+  //   get
+
+  // create match
+
+  async CreateMatch(data) {
+    const create = await this.clubRepo.CreateMatch(data);
+    return create;
   }
 }
 
