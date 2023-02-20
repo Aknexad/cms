@@ -152,8 +152,7 @@ module.exports = async app => {
     }
   });
 
-  // update
-
+  // update matches
   app.put('/matches', async (req, res, next) => {
     try {
       const { id, title, hustId, gustId, cptId } = req.body;
@@ -172,8 +171,7 @@ module.exports = async app => {
     }
   });
 
-  // delete
-
+  // delete Matches
   app.delete('/matches', async (req, res, next) => {
     try {
       const id = req.body.id;
@@ -181,6 +179,65 @@ module.exports = async app => {
       const result = await logic.DeleteMatche(id);
 
       res.json({ status: 200, massage: 'matche deleted', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  //
+  // Person Endpoint
+  //
+
+  // Get Person
+  app.get('/persons', async (req, res, next) => {
+    try {
+      const { role } = req.query;
+
+      const result = await logic.GetPersonLogic({ role });
+
+      res.json({ status: 200, massage: '', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Create Person
+  app.post('/persons', async (req, res, next) => {
+    try {
+      const { name, lastName, role } = req.body;
+
+      const result = await logic.CreatePerson({ name, lastName, role });
+
+      res.json({ status: 200, massage: '', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Update Person
+  app.put('/persons', async (req, res, next) => {
+    try {
+      const { id, name, lastName, role } = req.body;
+
+      const result = await logic.UpdatePersonLogic({
+        id,
+        name,
+        lastName,
+        role,
+      });
+      res.json({ status: 200, massage: '', payload: result });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // delete Person
+  app.delete('/persons', async (req, res, next) => {
+    try {
+      const id = req.body.id;
+
+      const result = await logic.DeletePerson(id);
+      res.json({ status: 200, massage: '', payload: result });
     } catch (error) {
       next(error);
     }

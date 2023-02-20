@@ -3,6 +3,7 @@ const Mongoose = require('mongoose');
 const teamModel = require('../models/team');
 const competitionsModel = require('../models/competition');
 const matchesModel = require('../models/matches');
+const personModel = require('../models/person');
 
 class ClubReposotory {
   //
@@ -329,6 +330,47 @@ class ClubReposotory {
   // delete Matche
   async DeleteMatche(id) {
     return await matchesModel.findByIdAndDelete(id);
+  }
+
+  //
+  // Person CRUD
+  //
+
+  // Get person
+
+  async GetAllPersons() {
+    return await personModel.find();
+  }
+
+  async GetPersonsByRole(role) {
+    return await personModel.find({ role: role });
+  }
+
+  // createPerson
+  async CreateNewPerson(payload) {
+    const query = await personModel.create({
+      frist_name: payload.name,
+      last_name: payload.lastName,
+      role: payload.role,
+    });
+    return query;
+  }
+
+  // update person
+  async UpdatePerson(payload) {
+    const query = await personModel.findById(payload.id);
+
+    if (!query) return query;
+
+    (query.frist_name = payload.name), (query.last_name = payload.lastName);
+    query.role = payload.role;
+    query.save();
+    return query;
+  }
+
+  // delete person
+  async DeletePerson(id) {
+    return await personModel.findByIdAndDelete(id);
   }
 }
 

@@ -198,6 +198,45 @@ class ClubManagementLogic {
 
     return deleteMatch;
   }
+
+  //
+  // Person
+  //
+
+  // Get
+  async GetPersonLogic(payload) {
+    if (payload.role) {
+      const persun = await this.clubRepo.GetPersonsByRole(payload.role);
+
+      if (!persun) throw new Error('cheack yor input');
+      return persun;
+    }
+
+    const everyOne = await this.clubRepo.GetAllPersons();
+    return everyOne;
+  }
+
+  // Create
+  async CreatePerson(payload) {
+    const newPerson = await this.clubRepo.CreateNewPerson(payload);
+
+    return newPerson;
+  }
+
+  // Update person
+  async UpdatePersonLogic(payload) {
+    const updatePerson = await this.clubRepo.UpdatePerson(payload);
+
+    if (!updatePerson) throw new Error('person dosent exsit');
+    return updatePerson;
+  }
+
+  // delete person
+  async DeletePerson(id) {
+    const deletePerson = await this.clubRepo.DeletePerson(id);
+    if (!deletePerson) throw new Error('persone doset exist');
+    return deletePerson;
+  }
 }
 
 module.exports = ClubManagementLogic;
