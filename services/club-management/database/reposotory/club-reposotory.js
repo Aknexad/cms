@@ -47,23 +47,30 @@ class ClubReposotory {
     }
   }
 
-  // add to squad
-  async AddStaffToTeam(id, playerId, cocheId) {
-    const query = await teamModel.findById(id);
-
-    if (!query) return query;
-
-    query.squad.player.push(Mongoose.Types.ObjectId(playerId));
-    query.squad.cotch = Mongoose.Types.ObjectId(cocheId);
-
-    query.save();
-
+  // add to player team
+  async AddPlayerToTeam(id, playerId) {
+    const query = await teamModel.updateOne(
+      { _id: id },
+      {
+        $push: { player: playerId },
+      }
+    );
     return query;
   }
 
-  // delete staff form teams
+  // add coache to team
 
-  async DeleteStaffFormTeams(staffId) {}
+  // delete player form teams
+  async DeletePlayerFormTeams(teamId, staffId) {
+    const query = await teamModel.updateOne(
+      { _id: teamId },
+      {
+        $pull: { player: staffId },
+      }
+    );
+
+    return query;
+  }
 
   // delete team
   async DeleteTeam(id) {

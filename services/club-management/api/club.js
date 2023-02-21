@@ -49,9 +49,26 @@ module.exports = async app => {
   // add to squad
   app.put('/teams/squad', async (req, res, next) => {
     try {
+      const { teamId, playerId, coacheId } = req.body;
+
+      await logic.addStaffToTeamLogice({
+        teamId,
+        playerId,
+        coacheId,
+      });
+
+      res.json({ status: 200, massage: 'Staff add to team', payload: {} });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // delete staff form team
+  app.delete('/teams/squad', async (req, res, next) => {
+    try {
       const { teamId, playerId, cocheId } = req.body;
 
-      const result = await logic.addStaffToTeamLogice({
+      const result = await logic.DeleteStaffFromTeam({
         teamId,
         playerId,
         cocheId,

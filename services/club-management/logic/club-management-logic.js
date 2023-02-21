@@ -36,17 +36,43 @@ class ClubManagementLogic {
   }
 
   async addStaffToTeamLogice(payload) {
-    const addStaff = await this.clubRepo.AddStaffToTeam(
-      payload.teamId,
-      payload.playerId,
-      payload.cocheId
-    );
+    if (payload.playerId && !payload.coacheId) {
+      const addStaff = await this.clubRepo.AddPlayerToTeam(
+        payload.teamId,
+        payload.playerId
+      );
 
-    return addStaff;
+      if (addStaff.acknowledged == false)
+        throw new Error('internall server Error');
+
+      if (addStaff.modifiedCount === 0)
+        throw new Error('chack id and tray agen');
+
+      return addStaff;
+    }
+
+    // if (!payload.playerId && payload.coacheId) {
+    //   const addStaff = await this.clubRepo.AddStaffToTeam(
+    //     payload.teamId,
+    //     payload.coacheId
+    //   );
+    //   return addStaff;
+    // }
+  }
+
+  // delete Saff Form team
+  async DeleteStaffFromTeam(payload) {
+    if (payload.playerId) {
+      const deletePlayer = await this.clubRepo.DeletePlayerFormTeams(
+        payload.teamId,
+        payload.playerId
+      );
+
+      return deletePlayer;
+    }
   }
 
   //delete team
-
   async DeleteTeam(id) {
     const deleteteam = await this.clubRepo.DeleteTeam(id);
 
