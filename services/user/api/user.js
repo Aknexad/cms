@@ -83,12 +83,12 @@ module.exports = async (app, passport, channel) => {
       const { userId, status, method } = req.body;
       // call
 
-      await logic.SetOtpStatus(userId, status, method);
+      const result = await logic.SetOtpStatus(userId, status, method);
 
       // return result
       res.json({
         status: 200,
-        massage: `your ${method} OTP is Active`,
+        massage: `your ${method} OTP is ${result}`,
         payload: {},
       });
     } catch (error) {
@@ -140,9 +140,8 @@ module.exports = async (app, passport, channel) => {
       await logic.SetOtp(userId, code);
 
       res.json({ status: 200, message: '', data: code });
-
-      await setTimeout(50000);
-      await logic.SetOtp(userId, null);
+      // await setTimeout(15000);
+      // await logic.SetOtp(userId, null);
     } catch (error) {
       next(error);
     }
@@ -163,15 +162,49 @@ module.exports = async (app, passport, channel) => {
     }
   });
 
-  app.delete('/logout', logic.CeckAccessToekn, async (req, res, next) => {
+  app.delete('/logout', async (req, res, next) => {
     try {
-      const token = req.body.token;
-      const cheackToeknInDb = await logic.VerifyAccessToekn(token);
+      const accessToken = req.body.accessToken;
+      const cheackToeknInDb = await logic.VerifyAccessToekn(accessToken);
 
       const documentId = cheackToeknInDb;
 
       const deletTokens = await logic.UserLogout(documentId);
-      res.json({ status: deletTokens, message, data });
+      res.json({ status: 200, massage: 'logpout', payload: { deletTokens } });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // recavery password
+  app.post('/recovery-password', async (req, res, next) => {
+    try {
+      const { userInput, method } = req.body;
+
+      const result = await logic.RequestRestPass(userInput, method);
+
+      res.json({ status: 200, massage: result, payload: {} });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/rp-verfi', async (req, res, next) => {
+    try {
+      const { userInput, method, code, password } = req.body;
+      const { token, subToken, id } = req.query;
+
+      const result = await logic.VerfyRestPass({
+        userInput,
+        method,
+        code,
+        password,
+        token,
+        subToken,
+        id,
+      });
+
+      res.json({ status: 200, massage: result, payload: {} });
     } catch (error) {
       next(error);
     }

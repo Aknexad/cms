@@ -108,6 +108,7 @@ class StrategyLogic {
 
       if (user.otp !== parseInt(password)) return done(null, false);
       await userRepo.UpdateOtp(user.id, null);
+
       return done(null, user);
     } catch (error) {
       done(error);

@@ -18,6 +18,10 @@ class UserRepositoty {
     return user;
   }
 
+  async FindUserByEmail(email) {
+    return await userModel.findOne({ email: email });
+  }
+
   async FindUserById(id) {
     try {
       const user = await userModel.findById(id);
@@ -134,6 +138,22 @@ class UserRepositoty {
     });
 
     return user;
+  }
+
+  async UpdateCrypteToken(id, base32, base16) {
+    const tokens = await userModel.findById(id);
+
+    tokens.token.push(base32);
+    tokens.token.push(base16);
+    tokens.save();
+
+    return tokens;
+  }
+
+  async UpdateUserPassword(id, pass) {
+    return await userModel.findByIdAndUpdate(id, {
+      $set: { password: pass, otp: null },
+    });
   }
 }
 

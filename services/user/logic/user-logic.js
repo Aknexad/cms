@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const bcrypt = require('bcrypt');
 
 const UserRepository = require('../database/repository/user-repository');
@@ -241,10 +243,9 @@ class UserLogic {
 
   async SetOtpStatus(userId, status, method) {
     // cheack for email and phone
+    const getUser = await this.repository.FindUserById(userId);
+    if (!getUser) throw new Error('user dosent exist');
     if (status === true) {
-      const getUser = await this.repository.FindUserById(userId);
-      if (!getUser) throw new Error('user dosent exist');
-
       if (method === 'phone' && !getUser.phone) {
         throw new Error('you dont have phone number');
       }
@@ -255,11 +256,109 @@ class UserLogic {
     }
 
     // chack Otp is activ or not
+    if (getUser.otpAuth === status) throw new Error(`your otp is ${status}`);
 
     // update reposetory
     await this.repository.UpdateStatusOfOtp(userId, status);
 
-    return;
+    return status;
+  }
+
+  //
+
+  async RecoveryPasswordSend(email, method) {
+    const getUser = await this.repository.FindUserById(id);
+    if (!getUser) throw new Error('user dosent exist');
+
+    if (method === 'phone') {
+      if (!getUser.phone) throw new Error('you dont have phone number');
+
+      const code = await this.GenarateOtp();
+
+      await this.repository.UpdateOtp(id, code);
+
+      return done;
+    }
+  }
+
+  async RequestRestPass(userInput, method) {
+    // finde user
+    const user = await this.repository.FindUserByEmail(userInput);
+
+    // if (!user) return `recavery code send to ${method}`;
+    if (!user) throw new Error('user dont exit');
+
+    if (method === 'phone') {
+      const code = await this.GenarateOtp();
+
+      await this.repository.UpdateOtp(user.id, code);
+
+      console.log(code);
+
+      return 'code send to yourr phone';
+    }
+
+    if (method === 'email') {
+      const { base32, base16 } = await this.CryptoGenareateToken();
+
+      const saveToekn = await this.repository.UpdateCrypteToken(
+        user.id,
+        base32,
+        base16
+      );
+
+      const link = `${process.env.REST_PASSWORD_BASE_URL}t1=${base32}/t2=${base16}/id=${user.id}`;
+
+      // send to email
+      console.log(link);
+
+      return 'chack your email';
+    }
+  }
+
+  async VerfyRestPass(payload) {
+    if (payload.method === 'phone') {
+      const user = await this.repository.FindByCustomFiled(payload.userInput);
+
+      if (!user) throw new Error('user dosent exist');
+
+      if (user.otp !== parseInt(payload.code))
+        throw new Error('code dont match');
+
+      const hashPass = await bcrypt.hash(payload.password, 7);
+
+      await this.repository.UpdateUserPassword(user.id, hashPass);
+
+      return 'ok';
+    }
+
+    //
+
+    if (payload.method === 'email') {
+      const user = await this.repository.FindUserById(payload.id);
+
+      if (!user) throw new Error('user dont exist');
+
+      if (
+        user.token[0] !== payload.token &&
+        user.token[1] !== payload.subToken
+      ) {
+        throw new Error('token dont match ');
+      }
+
+      const hashPass = await bcrypt.hash(payload.password, 7);
+
+      await this.repository.UpdateUserPassword(user.id, hashPass);
+
+      return 'ok';
+    }
+  }
+
+  async CryptoGenareateToken() {
+    const base32 = crypto.randomBytes(32).toString('hex');
+    const base16 = crypto.randomBytes(16).toString('hex');
+
+    return { base32, base16 };
   }
 
   // RPC responce
