@@ -1,5 +1,7 @@
 node_modules
 
+fan-club
+
 .env
 
 qc.js

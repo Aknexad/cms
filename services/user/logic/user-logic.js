@@ -27,8 +27,9 @@ class UserLogic {
 
   async UserRegister(usernaeme, passowrd) {
     const checkUserExisting = await this.repository.FindUser(usernaeme);
+    console.log(checkUserExisting);
 
-    if (checkUserExisting !== null) throw new Error('username exist ');
+    if (checkUserExisting) throw new Error('username exist');
 
     const hashedPass = await bcrypt.hash(passowrd, 7);
 
@@ -144,6 +145,7 @@ class UserLogic {
         status,
         method
       );
+
       const secret = generateSecrat(id);
 
       const updateSecret = await this.repository.UpdateSecret(id, secret);
@@ -152,13 +154,37 @@ class UserLogic {
       return updateStatus;
     }
 
-    const updateStatus = await this.repository.UpdateUser2fa(
-      id,
-      status,
-      method
-    );
+    // phone
+    if (method === 'phone') {
+      const getUser = await this.repository.FindUserById(id);
 
-    return updateStatus;
+      if (!getUser.phone) throw new Error('you dont have phone number');
+
+      const updateStatus = await this.repository.UpdateUser2fa(
+        id,
+        status,
+        method
+      );
+
+      return updateStatus;
+    }
+
+    // email
+    if (method === 'email') {
+      const getUser = await this.repository.FindUserById(id);
+
+      if (!getUser.email) throw new Error('you dont have Email');
+
+      const updateStatus = await this.repository.UpdateUser2fa(
+        id,
+        status,
+        method
+      );
+
+      return updateStatus;
+    }
+
+    throw new Error('chack method');
   }
 
   async DisabelTowFactAuth(id, status, method) {
@@ -178,7 +204,7 @@ class UserLogic {
   }
 
   async GenarateTempToken(id) {
-    const tempToken = generateSecrat(id);
+    const tempToken = generateSecrat();
 
     const saveToekn = await this.repository.UpdateTempToken(
       id,
@@ -190,7 +216,7 @@ class UserLogic {
     return saveToekn;
   }
 
-  async GenarateOtpAndSaved() {
+  async GenarateOtp() {
     try {
       const code = Math.floor(100000 + Math.random() * 900000);
 
@@ -202,8 +228,9 @@ class UserLogic {
 
   async SetOtp(id, otp) {
     try {
-      console.log('claa set otp');
       const user = await this.repository.FindUserById(id);
+
+      if (user.otp !== null) throw new Error('you have otp whit and tray agen');
 
       const setOtp = await this.repository.UpdateOtp(id, otp);
       return setOtp;
@@ -212,6 +239,30 @@ class UserLogic {
     }
   }
 
+  async SetOtpStatus(userId, status, method) {
+    // cheack for email and phone
+    if (status === true) {
+      const getUser = await this.repository.FindUserById(userId);
+      if (!getUser) throw new Error('user dosent exist');
+
+      if (method === 'phone' && !getUser.phone) {
+        throw new Error('you dont have phone number');
+      }
+
+      if (method === 'email' && !getUser.email) {
+        throw new Error('you dont have email address');
+      }
+    }
+
+    // chack Otp is activ or not
+
+    // update reposetory
+    await this.repository.UpdateStatusOfOtp(userId, status);
+
+    return;
+  }
+
+  // RPC responce
   async serverRpcRequest(data) {
     const getUsername = await this.repository.FindUserById(data.data);
 

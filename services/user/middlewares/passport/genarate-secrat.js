@@ -1,6 +1,6 @@
 const speakeasy = require('speakeasy');
 
-function genarateSecrate(userId) {
+function genarateSecrate() {
   const secrate = speakeasy.generateSecret();
 
   return secrate;

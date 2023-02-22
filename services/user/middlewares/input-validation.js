@@ -6,8 +6,6 @@ function registerValidation(req, res, next) {
     password: req.body.password,
   };
 
-  console.log(userInput);
-
   const schema = Joi.object({
     username: Joi.string().min(3).required(),
     password: Joi.string()

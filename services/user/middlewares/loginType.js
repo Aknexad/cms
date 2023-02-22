@@ -11,7 +11,9 @@ async function loginType(req, res, next) {
   const tempToken = await logic.GenarateTempToken(user.id);
 
   if (tfa.email === true || tfa.phone === true) {
-    const code = await logic.GenarateOtpAndSaved(user.id);
+    const code = await logic.GenarateOtp(user.id);
+
+    await logic.SetOtp(user.id, code);
 
     console.log({ code });
 

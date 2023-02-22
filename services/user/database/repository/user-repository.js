@@ -39,7 +39,7 @@ class UserRepositoty {
       const byPhone = await userModel.findOne({ phone: input });
       if (byPhone) return byPhone;
 
-      throw new Error('user dont exist');
+      // throw new Error('user dont exist');
     } catch (error) {
       throw new Error(error);
     }
@@ -121,12 +121,19 @@ class UserRepositoty {
       const user = await userModel.findById(id);
       if (!user) throw new Error('user dont exsst');
       // if (user.otp !== null) throw new Error('please wite ');
-
       user.otp = num;
       user.save();
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  async UpdateStatusOfOtp(id, status) {
+    const user = await userModel.findByIdAndUpdate(id, {
+      $set: { otpAuth: status },
+    });
+
+    return user;
   }
 }
 

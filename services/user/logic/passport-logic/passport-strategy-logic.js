@@ -15,6 +15,8 @@ class StrategyLogic {
 
       if (!user) return done(null, false);
 
+      if (user.otpAuth === true) throw new Error('your OTP is anabel');
+
       if (await bcrypt.compare(password, user.password)) {
         return done(null, user);
       }
@@ -96,9 +98,11 @@ class StrategyLogic {
     try {
       const { userInput, password } = req.body;
 
+      console.log(userInput, password);
       const user = await userRepo.FindByCustomFiled(userInput);
 
-      if (user === null) return done(null, false);
+      if (!user) return done(null, false);
+
       if (user.otpAuth === false) throw new Error('you dont enabel otp ');
       if (user.otp === null) throw new Error('you dont have otp try agen');
 

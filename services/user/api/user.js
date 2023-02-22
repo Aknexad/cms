@@ -7,16 +7,16 @@ const registerValidation = require('../middlewares/input-validation');
 
 //middlewares
 const loginType = require('../middlewares/loginType');
-const {
-  PublishMessage,
-  SubscribMessage,
-  RPCObserver,
-} = require('../middlewares/message-broker');
+// const {
+//   PublishMessage,
+//   SubscribMessage,
+//   RPCObserver,
+// } = require('../middlewares/message-broker');
 
 module.exports = async (app, passport, channel) => {
   const logic = new UserLogic();
 
-  RPCObserver('BRPC', logic);
+  // RPCObserver('BRPC', logic);
 
   app.post('/register', registerValidation, async (req, res, next) => {
     try {
@@ -77,6 +77,25 @@ module.exports = async (app, passport, channel) => {
     }
   );
 
+  app.put('/set-otp', async (req, res, next) => {
+    try {
+      // get data
+      const { userId, status, method } = req.body;
+      // call
+
+      await logic.SetOtpStatus(userId, status, method);
+
+      // return result
+      res.json({
+        status: 200,
+        massage: `your ${method} OTP is Active`,
+        payload: {},
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.post('/enable-2fa', async (req, res, next) => {
     try {
       const { userId, status, method } = req.body;
@@ -117,12 +136,12 @@ module.exports = async (app, passport, channel) => {
     try {
       const { userId } = req.body;
 
-      const code = await logic.GenarateOtpAndSaved();
+      const code = await logic.GenarateOtp();
       await logic.SetOtp(userId, code);
 
       res.json({ status: 200, message: '', data: code });
 
-      await setTimeout(5000);
+      await setTimeout(50000);
       await logic.SetOtp(userId, null);
     } catch (error) {
       next(error);
